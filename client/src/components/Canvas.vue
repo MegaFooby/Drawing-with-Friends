@@ -73,24 +73,26 @@ export default class Canvas extends Vue {
     this.circle = new paper.Tool();
     this.circle.minDistance = 2;
     this.circle.onMouseDown = (event: paper.ToolEvent) => {
-      this.path = new paper.Path.Ellipse(new paper.Rectangle(event.point, new paper.Size(1, 1)));
+      this.path = new paper.Path.Ellipse(
+        new paper.Rectangle(event.point, new paper.Size(1, 1))
+      );
       this.setPath(this.path);
       startPoint = event.point;
       xpositive = true;
       ypositive = true;
-    }
+    };
 
     this.circle.onMouseDrag = (event: paper.ToolEvent) => {
-      let x = (event.point.x - startPoint.x)/this.path.bounds.width;
-      let y = (event.point.y - startPoint.y)/this.path.bounds.height;
-      if(!xpositive) x = -x;
-        if(!ypositive) y = -y;
-        xpositive = (event.point.x - startPoint.x) >= 0;
-        ypositive = (event.point.y - startPoint.y) >= 0;
-        if(x != 0 && y != 0) {
-          this.path.scale(x,y, startPoint);
-        }
-    }
+      let x = (event.point.x - startPoint.x) / this.path.bounds.width;
+      let y = (event.point.y - startPoint.y) / this.path.bounds.height;
+      if (!xpositive) x = -x;
+      if (!ypositive) y = -y;
+      xpositive = event.point.x - startPoint.x >= 0;
+      ypositive = event.point.y - startPoint.y >= 0;
+      if (x != 0 && y != 0) {
+        this.path.scale(x, y, startPoint);
+      }
+    };
 
     this.circle.onMouseUp = this.send;
   }
@@ -124,5 +126,9 @@ body {
 canvas[resize] {
   width: 100%;
   height: 100%;
+}
+
+a {
+  padding-right: 4px;
 }
 </style>

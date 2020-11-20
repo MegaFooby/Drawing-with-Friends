@@ -1,18 +1,29 @@
 <template>
   <div>
-    <a href="#" @click="pen.activate()">Pen</a>
-    <a href="#" @click="square.activate()">Square</a>
-    <a href="#" @click="circle.activate()">Circle</a>
-    <a href="#" @click="fill = !fill">Fill</a>
-    <a href="#" @click="receive('')">Receive</a>
-    <canvas id="myCanvas" resize></canvas>
+  <canvas id="myCanvas" resize></canvas>
+  <Menu tag="nav" class="drawing-palette">
+    <menu-item-group title="Tools">
+      <menu-item @click="pen.activate()">     Pen </menu-item>
+      <menu-item @click="square.activate()">  Square </menu-item>
+      <menu-item @click="circle.activate()">  Circle </menu-item>
+    </menu-item-group>
+    <menu-item v-bind:active="fill" @click="fill = !fill">       Fill </menu-item>
+    <menu-item @click="receive('')">        Receive </menu-item>
+  </Menu>
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import paper from "paper";
+import Menu from "@/components/menu/Menu.vue";
+import MenuItem from "@/components/menu/MenuItem.vue";
+import MenuItemGroup from "@/components/menu/MenuItemGroup.vue";
 
-@Component
+@Component({
+  components: {
+    Menu, MenuItem, MenuItemGroup
+  }
+})
 export default class Canvas extends Vue {
   private color = "#000000";
   private fill = false;
@@ -124,11 +135,19 @@ body {
 }
 
 canvas[resize] {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 a {
   padding-right: 4px;
+}
+
+.drawing-palette {
+  top: 50vh;
+  left: 0;
 }
 </style>

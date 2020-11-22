@@ -1,6 +1,8 @@
 <template>
     <component :is="tag" class="menu" v-drag="{ handle: '#handle' }">
-      <span id="handle">handle</span>
+      <div id="handle">
+        <font-awesome-icon icon="grip-lines"></font-awesome-icon>
+      </div>
       <slot>
       <!-- looks like:
         <menu-item />
@@ -25,6 +27,10 @@
   @Component
   export default class Menu extends Vue {
     tag = 'div'; // so we can change it to nav or some shiz
+
+    select(mi: MenuItem) {
+      console.log('selected', mi.icon);
+    }
   }
 
 </script>
@@ -33,10 +39,10 @@
     z-index: 10000;
     display: flex;
     flex-direction: column;
-    width: fit-content;
+    width: 2rem;
     height: fit-content;
     border: 2px solid black;
-    border-radius: 15px;
+    border-radius: 1rem;
 
     position: absolute !important;
     background-color: $menu-bg;

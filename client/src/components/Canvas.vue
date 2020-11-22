@@ -1,14 +1,14 @@
 <template>
   <div>
   <canvas id="myCanvas" resize></canvas>
-  <Menu tag="nav" class="drawing-palette">
-    <menu-item-group title="Tools">
-      <menu-item @click="pen.activate()">     Pen </menu-item>
-      <menu-item @click="square.activate()">  Square </menu-item>
-      <menu-item @click="circle.activate()">  Circle </menu-item>
+  <Menu tag="nav" class="drawing-palette" >
+    <menu-item-group title="Tools" icon="pencil-ruler" ref="tools">
+      <menu-item @click="activate(pen, $event)"    icon="pen" />
+      <menu-item @click="activate(square, $event)" icon="square" />
+      <menu-item @click="activate(circle, $event)" icon="circle" />
     </menu-item-group>
-    <menu-item v-bind:active="fill" @click="fill = !fill">       Fill </menu-item>
-    <menu-item @click="receive('')">        Receive </menu-item>
+    <menu-item v-bind:active="fill" @click="fill = !fill" icon="fill-drip" />
+    <menu-item @click="receive('')" icon="sync-alt" />
   </Menu>
   </div>
 </template>
@@ -35,6 +35,7 @@ export default class Canvas extends Vue {
   private pen!: paper.Tool;
   private square!: paper.Tool;
   private circle!: paper.Tool;
+  private selected!: MenuItem;
 
   mounted() {
     this.scope = new paper.PaperScope();
@@ -126,6 +127,10 @@ export default class Canvas extends Vue {
     path.strokeWidth = this.width;
     path.strokeCap = "round";
     if (this.fill) path.fillColor = new paper.Color(0, 0, 0);
+  }
+
+  activate(tool: paper.Tool, $e: MenuItem) {
+    tool.activate();
   }
 }
 </script>

@@ -1,0 +1,4 @@
+{
+    "connectionString": "mongodb+srv://admin:admin@drawingwithfriendsclust.1dxgm.mongodb.net/DrawingWithFriends_DB?retryWrites=true&w=majority",
+    "secret": "secretTestString"
+}

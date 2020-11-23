@@ -59,22 +59,21 @@ export default class Canvas extends Vue {
     this.square = new paper.Tool();
     this.square.minDistance = 2;
     let startPoint: paper.Point;
-    let xpositive: boolean, ypositive: boolean;
     this.square.onMouseDown = (event: paper.ToolEvent) => {
       this.path = new paper.Path.Rectangle(event.point, new paper.Size(1, 1));
       this.setPath(this.path);
       startPoint = event.point;
-      xpositive = true;
-      ypositive = true;
     };
 
     this.square.onMouseDrag = (event: paper.ToolEvent) => {
-      let x = (event.point.x - startPoint.x) / this.path.bounds.width;
-      let y = (event.point.y - startPoint.y) / this.path.bounds.height;
-      if (!xpositive) x = -x;
-      if (!ypositive) y = -y;
-      xpositive = event.point.x - startPoint.x >= 0;
-      ypositive = event.point.y - startPoint.y >= 0;
+      let x = Math.abs((event.point.x - startPoint.x) / this.path.bounds.width);
+      let y = Math.abs((event.point.y - startPoint.y) / this.path.bounds.height);
+      if((event.point.x < startPoint.x && this.path.bounds.center.x > startPoint.x) || (event.point.x > startPoint.x && this.path.bounds.center.x < startPoint.x)) {
+        x = -x;
+      }
+      if((event.point.y < startPoint.y && this.path.bounds.center.y > startPoint.y) || (event.point.y > startPoint.y && this.path.bounds.center.y < startPoint.y)) {
+        y = -y;
+      }
       if (x != 0 && y != 0) {
         this.path.scale(x, y, startPoint);
       }
@@ -90,17 +89,17 @@ export default class Canvas extends Vue {
       );
       this.setPath(this.path);
       startPoint = event.point;
-      xpositive = true;
-      ypositive = true;
     };
 
     this.circle.onMouseDrag = (event: paper.ToolEvent) => {
-      let x = (event.point.x - startPoint.x) / this.path.bounds.width;
-      let y = (event.point.y - startPoint.y) / this.path.bounds.height;
-      if (!xpositive) x = -x;
-      if (!ypositive) y = -y;
-      xpositive = event.point.x - startPoint.x >= 0;
-      ypositive = event.point.y - startPoint.y >= 0;
+      let x = Math.abs((event.point.x - startPoint.x) / this.path.bounds.width);
+      let y = Math.abs((event.point.y - startPoint.y) / this.path.bounds.height);
+      if((event.point.x < startPoint.x && this.path.bounds.center.x > startPoint.x) || (event.point.x > startPoint.x && this.path.bounds.center.x < startPoint.x)) {
+        x = -x;
+      }
+      if((event.point.y < startPoint.y && this.path.bounds.center.y > startPoint.y) || (event.point.y > startPoint.y && this.path.bounds.center.y < startPoint.y)) {
+        y = -y;
+      }
       if (x != 0 && y != 0) {
         this.path.scale(x, y, startPoint);
       }

@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "npm": "npm i && cd client && npm i && cd ..",
+    "serve": "node index.js",
+    "client": "cd client && npm run serve",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

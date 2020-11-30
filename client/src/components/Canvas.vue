@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div @mousemove="mouseMove($event)">
   <canvas id="myCanvas" resize></canvas>
   <Menu tag="nav" class="drawing-palette" >
     <menu-item-group title="Tools" icon="pencil-ruler" ref="tools">
@@ -7,7 +7,8 @@
       <menu-item @click="activate(square, $event)" icon="square" />
       <menu-item @click="activate(circle, $event)" icon="circle" />
     </menu-item-group>
-    <menu-item v-bind:active="fill" @click="fill = !fill" icon="fill-drip" />
+    <menu-item :active="fill" @click="fill = !fill" icon="fill-drip" />
+    <menu-item :active="active(move)" @click="activate(move, $event)" icon="arrows-alt" />
     <menu-item @click="receive('')" icon="sync-alt" />
   </Menu>
   </div>
@@ -32,9 +33,16 @@ export default class Canvas extends Vue {
   private path!: paper.Path;
   private scope!: paper.PaperScope;
 
-  private pen!: paper.Tool;
-  private square!: paper.Tool;
-  private circle!: paper.Tool;
+  private pen = new paper.Tool();
+  private square = new paper.Tool();
+  private circle = new paper.Tool();
+  private move = new paper.Tool();
+  private captureMove = false;
+  private mouse: {
+    last?: paper.Point,
+    event?: MouseEvent,
+  } = {};
+
   private selected!: MenuItem;
 
   mounted() {
@@ -106,6 +114,27 @@ export default class Canvas extends Vue {
     };
 
     this.circle.onMouseUp = this.send;
+
+    this.move = new paper.Tool();
+    this.move.onMouseDown = (event: paper.ToolEvent) => this.captureMove = false;
+    this.move.onMouseDown = (event: paper.ToolEvent) => {
+      this.captureMove = true;
+      this.mouse.last = undefined;
+    };
+    this.move.onMouseDrag = (event: paper.ToolEvent) => {
+      let dx, dy;
+      if(this.mouse.last && this.mouse.event) {
+        dx = this.mouse.last.x - this.mouse.event.clientX;
+        dy = this.mouse.last.y - this.mouse.event.clientY;
+      } else {
+        dx = -event.delta.x;
+        dy = -event.delta.y;
+      }
+
+      this.mouse.last = this.mouse.event ? new paper.Point(this.mouse.event.clientX, this.mouse.event.clientY) : undefined;
+      if (dx !== 0 || dy !== 0)
+        this.scope.view.center = this.scope.view.center.add( new paper.Point(dx, dy));
+    };
   }
 
   //run this at every onMouseUp to send this to the server
@@ -129,7 +158,16 @@ export default class Canvas extends Vue {
   }
 
   activate(tool: paper.Tool, $e: MenuItem) {
-    tool.activate();
+    if (tool) tool.activate();
+    this.selected = $e;
+  }
+
+  active($e: MenuItem) {
+    return !!(this.selected && this.selected == $e)
+  }
+
+  mouseMove($event: MouseEvent){
+    if (this.captureMove) this.mouse.event = $event;
   }
 }
 </script>

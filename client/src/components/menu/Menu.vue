@@ -1,5 +1,5 @@
 <template>
-    <component :is="tag" class="menu" v-drag="{ handle: '#handle' }">
+    <component :is="tag" class="menu" v-drag="'#handle'">
       <div id="handle">
         <font-awesome-icon icon="grip-lines"></font-awesome-icon>
       </div>
@@ -19,9 +19,9 @@
 <script lang="ts">
   import { Component, Prop, Vue } from "vue-property-decorator";
   import drag from "v-drag";
+  Vue.use(drag);
   import MenuItem from "./MenuItem.vue";
 
-  Vue.use(drag);
 
   /** A component to make menus have consistant styling and be movable */
   @Component
@@ -30,6 +30,10 @@
 
     select(mi: MenuItem) {
       console.log('selected', mi.icon);
+    }
+
+    deselectAll(except?: MenuItem) {
+      //TODO iterate through all children and deselct if not except
     }
   }
 

@@ -1,6 +1,6 @@
 <template>
     <div class="menu-item-group">
-      <div class="handle" :ref="disp">
+      <div class="handle" ref="disp">
         <font-awesome-icon :icon="selectedIcon"></font-awesome-icon>
       </div>
       <!-- {{selectedIcon || icon || title}} -->
@@ -14,7 +14,7 @@
 </template>
 <script lang="ts">
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { Component, Prop, Vue } from "vue-property-decorator";
+  import { Component, Prop, Vue } from "vue-property-decorator";
   import MenuItem from "./MenuItem.vue";
 
   /** A component to make menu items have consistant styling */
@@ -35,6 +35,10 @@ import { Component, Prop, Vue } from "vue-property-decorator";
       //TODO: my idea here is to swap the group icon with whatever was just clicked
       //this.$refs.disp.
       //this.$createElement(FontAwesomeIcon, { props: { icon: this.selectedIcon } })
+    }
+
+    deselectAll(except?: MenuItem) {
+      //TODO: iterate through children and deselect them
     }
   }
 </script>

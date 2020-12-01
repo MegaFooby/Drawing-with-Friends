@@ -10,6 +10,9 @@
     <menu-item :active="fill" @click="fill = !fill" icon="fill-drip" />
     <menu-item :active="active(move)" @click="activate(move, $event)" icon="arrows-alt" />
     <menu-item @click="receive('')" icon="sync-alt" />
+    <menu-item-group>
+      <color-picker :visible-formats="['hex']" color="color" @color-change="updateColor" copy-button="" />
+    </menu-item-group>
   </Menu>
   </div>
 </template>
@@ -19,14 +22,15 @@ import paper from "paper";
 import Menu from "@/components/menu/Menu.vue";
 import MenuItem from "@/components/menu/MenuItem.vue";
 import MenuItemGroup from "@/components/menu/MenuItemGroup.vue";
+import {ColorPicker} from 'vue-accessible-color-picker';
 
 @Component({
   components: {
-    Menu, MenuItem, MenuItemGroup
+    Menu, MenuItem, MenuItemGroup, ColorPicker
   }
 })
 export default class Canvas extends Vue {
-  private color = "#000000";
+  private color = new paper.Color(0, 0, 0);
   private fill = false;
   private width = 5;
 
@@ -53,6 +57,8 @@ export default class Canvas extends Vue {
 
     this.pen.onMouseDown = (event: paper.ToolEvent) => {
       this.path = new paper.Path();
+      console.log(this.color);
+      this.path.strokeColor = this.color;
       this.setPath(this.path);
       this.path.add(event.point);
     };
@@ -137,6 +143,10 @@ export default class Canvas extends Vue {
     };
   }
 
+  updateColor(eventData: ColorPicker.colors) {
+    this.color = new paper.Color(eventData.colors.rgb.r,eventData.colors.rgb.g,eventData.colors.rgb.b);
+  }
+
   //run this at every onMouseUp to send this to the server
   send() {
     const json = this.path.exportJSON([true, 5]); //number is float precision
@@ -151,10 +161,10 @@ export default class Canvas extends Vue {
   }
 
   setPath(path: paper.Path) {
-    path.strokeColor = new paper.Color(0, 0, 0);
+    path.strokeColor = this.color;
     path.strokeWidth = this.width;
     path.strokeCap = "round";
-    if (this.fill) path.fillColor = new paper.Color(0, 0, 0);
+    if (this.fill) path.fillColor = this.color;
   }
 
   activate(tool: paper.Tool, $e: MenuItem) {

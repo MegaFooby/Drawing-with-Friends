@@ -1,5 +1,32 @@
+<script>
+  import modal from '@/components/SettingsModal.vue';
+
+  export default {
+    name: 'app',
+    components: {
+      modal,
+    },
+    data () {
+      return {
+        isModalVisible: false,
+      };
+    },
+    methods: {
+      showModal() {
+        this.isModalVisible = true;
+      },
+      closeModal() {
+        this.isModalVisible = false;
+      }
+    },
+  };
+</script>
+
 <template>
+
   <div id="app">
+    <button type="button" class="btn" @click="showModal">Settings</button>
+    <modal v-show="isModalVisible" @close="closeModal"/>
     <router-view />
   </div>
 </template>

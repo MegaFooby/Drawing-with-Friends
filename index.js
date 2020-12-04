@@ -1,12 +1,28 @@
+require('rootpath')();
 const express = require('express');
 const { MongoClient } = require('mongodb');
+const cors = require('cors');
+const config = require('config.json');
+const bodyParser = require('body-parser');
+const jwt = require('helpers/jwt');
+const errorHandler = require('helpers/error-handler');
 const app = express();
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(cors());
+
+app.use(jwt()); // auth for current logged in user
  
-app.get('/', (req, res) => {
+app.get('/', (req, res) => {            // Home request
     res.json({
         message: 'Drawing with friends!'
     });
 });
+
+app.use('/users', require('./users/users.controller'));     // Users api endpoints
+
+app.use(errorHandler);
  
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
@@ -15,8 +31,7 @@ app.listen(port, () => {
 
 async function main() {
 
-    const connectionURL = 'mongodb+srv://admin:admin@drawingwithfriendsclust.1dxgm.mongodb.net/DrawingWithFriends_DB?retryWrites=true&w=majority';
-    const db = new MongoClient(connectionURL, { useNewUrlParser: true, useUnifiedTopology: true} );
+    const db = new MongoClient(config.connectionString, { useNewUrlParser: true, useUnifiedTopology: true} );
 
     try {
         // Connect to the MongoDB cluster

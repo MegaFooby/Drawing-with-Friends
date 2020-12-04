@@ -111,12 +111,11 @@ export default {
       this.submitted = true;
       this.$validator.validate().then(isValid => {
         if (isValid) {
-          // console.log("User:");
-          // console.log(this.user);
           this.$store.dispatch('auth/register', this.user).then(
             data => {
               this.message = data.message;
               this.successful = true;
+              this.$router.push('/profile');
             },
             error => {
               this.message =

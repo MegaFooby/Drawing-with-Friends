@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div @mousemove="mouseMove($event)">
   <canvas id="myCanvas" resize></canvas>
   <Menu tag="nav" class="drawing-palette" >
     <menu-item-group title="Tools" icon="pencil-ruler" ref="tools">
@@ -7,8 +7,12 @@
       <menu-item @click="activate(square, $event)" icon="square" />
       <menu-item @click="activate(circle, $event)" icon="circle" />
     </menu-item-group>
-    <menu-item v-bind:active="fill" @click="fill = !fill" icon="fill-drip" />
+    <menu-item :active="fill" @click="fill = !fill" icon="fill-drip" />
+    <menu-item :active="active(move)" @click="activate(move, $event)" icon="arrows-alt" />
     <menu-item @click="receive('')" icon="sync-alt" />
+    <menu-item-group>
+      <color-picker :visible-formats="['hex']" color="color" @color-change="updateColor" copy-button="" />
+    </menu-item-group>
   </Menu>
   </div>
 </template>
@@ -18,23 +22,31 @@ import paper from "paper";
 import Menu from "@/components/menu/Menu.vue";
 import MenuItem from "@/components/menu/MenuItem.vue";
 import MenuItemGroup from "@/components/menu/MenuItemGroup.vue";
+import {ColorPicker} from 'vue-accessible-color-picker';
 
 @Component({
   components: {
-    Menu, MenuItem, MenuItemGroup
+    Menu, MenuItem, MenuItemGroup, ColorPicker
   }
 })
 export default class Canvas extends Vue {
-  private color = "#000000";
+  private color = new paper.Color(0, 0, 0);
   private fill = false;
   private width = 5;
 
   private path!: paper.Path;
   private scope!: paper.PaperScope;
 
-  private pen!: paper.Tool;
-  private square!: paper.Tool;
-  private circle!: paper.Tool;
+  private pen = new paper.Tool();
+  private square = new paper.Tool();
+  private circle = new paper.Tool();
+  private move = new paper.Tool();
+  private captureMove = false;
+  private mouse: {
+    last?: paper.Point,
+    event?: MouseEvent,
+  } = {};
+
   private selected!: MenuItem;
 
   mounted() {
@@ -45,6 +57,8 @@ export default class Canvas extends Vue {
 
     this.pen.onMouseDown = (event: paper.ToolEvent) => {
       this.path = new paper.Path();
+      console.log(this.color);
+      this.path.strokeColor = this.color;
       this.setPath(this.path);
       this.path.add(event.point);
     };
@@ -59,22 +73,21 @@ export default class Canvas extends Vue {
     this.square = new paper.Tool();
     this.square.minDistance = 2;
     let startPoint: paper.Point;
-    let xpositive: boolean, ypositive: boolean;
     this.square.onMouseDown = (event: paper.ToolEvent) => {
       this.path = new paper.Path.Rectangle(event.point, new paper.Size(1, 1));
       this.setPath(this.path);
       startPoint = event.point;
-      xpositive = true;
-      ypositive = true;
     };
 
     this.square.onMouseDrag = (event: paper.ToolEvent) => {
-      let x = (event.point.x - startPoint.x) / this.path.bounds.width;
-      let y = (event.point.y - startPoint.y) / this.path.bounds.height;
-      if (!xpositive) x = -x;
-      if (!ypositive) y = -y;
-      xpositive = event.point.x - startPoint.x >= 0;
-      ypositive = event.point.y - startPoint.y >= 0;
+      let x = Math.abs((event.point.x - startPoint.x) / this.path.bounds.width);
+      let y = Math.abs((event.point.y - startPoint.y) / this.path.bounds.height);
+      if((event.point.x < startPoint.x && this.path.bounds.center.x > startPoint.x) || (event.point.x > startPoint.x && this.path.bounds.center.x < startPoint.x)) {
+        x = -x;
+      }
+      if((event.point.y < startPoint.y && this.path.bounds.center.y > startPoint.y) || (event.point.y > startPoint.y && this.path.bounds.center.y < startPoint.y)) {
+        y = -y;
+      }
       if (x != 0 && y != 0) {
         this.path.scale(x, y, startPoint);
       }
@@ -90,23 +103,48 @@ export default class Canvas extends Vue {
       );
       this.setPath(this.path);
       startPoint = event.point;
-      xpositive = true;
-      ypositive = true;
     };
 
     this.circle.onMouseDrag = (event: paper.ToolEvent) => {
-      let x = (event.point.x - startPoint.x) / this.path.bounds.width;
-      let y = (event.point.y - startPoint.y) / this.path.bounds.height;
-      if (!xpositive) x = -x;
-      if (!ypositive) y = -y;
-      xpositive = event.point.x - startPoint.x >= 0;
-      ypositive = event.point.y - startPoint.y >= 0;
+      let x = Math.abs((event.point.x - startPoint.x) / this.path.bounds.width);
+      let y = Math.abs((event.point.y - startPoint.y) / this.path.bounds.height);
+      if((event.point.x < startPoint.x && this.path.bounds.center.x > startPoint.x) || (event.point.x > startPoint.x && this.path.bounds.center.x < startPoint.x)) {
+        x = -x;
+      }
+      if((event.point.y < startPoint.y && this.path.bounds.center.y > startPoint.y) || (event.point.y > startPoint.y && this.path.bounds.center.y < startPoint.y)) {
+        y = -y;
+      }
       if (x != 0 && y != 0) {
         this.path.scale(x, y, startPoint);
       }
     };
 
     this.circle.onMouseUp = this.send;
+
+    this.move = new paper.Tool();
+    this.move.onMouseDown = (event: paper.ToolEvent) => this.captureMove = false;
+    this.move.onMouseDown = (event: paper.ToolEvent) => {
+      this.captureMove = true;
+      this.mouse.last = undefined;
+    };
+    this.move.onMouseDrag = (event: paper.ToolEvent) => {
+      let dx, dy;
+      if(this.mouse.last && this.mouse.event) {
+        dx = this.mouse.last.x - this.mouse.event.clientX;
+        dy = this.mouse.last.y - this.mouse.event.clientY;
+      } else {
+        dx = -event.delta.x;
+        dy = -event.delta.y;
+      }
+
+      this.mouse.last = this.mouse.event ? new paper.Point(this.mouse.event.clientX, this.mouse.event.clientY) : undefined;
+      if (dx !== 0 || dy !== 0)
+        this.scope.view.center = this.scope.view.center.add( new paper.Point(dx, dy));
+    };
+  }
+
+  updateColor(eventData: ColorPicker.colors) {
+    this.color = new paper.Color(eventData.colors.rgb.r,eventData.colors.rgb.g,eventData.colors.rgb.b);
   }
 
   //run this at every onMouseUp to send this to the server
@@ -123,14 +161,23 @@ export default class Canvas extends Vue {
   }
 
   setPath(path: paper.Path) {
-    path.strokeColor = new paper.Color(0, 0, 0);
+    path.strokeColor = this.color;
     path.strokeWidth = this.width;
     path.strokeCap = "round";
-    if (this.fill) path.fillColor = new paper.Color(0, 0, 0);
+    if (this.fill) path.fillColor = this.color;
   }
 
   activate(tool: paper.Tool, $e: MenuItem) {
-    tool.activate();
+    if (tool) tool.activate();
+    this.selected = $e;
+  }
+
+  active($e: MenuItem) {
+    return !!(this.selected && this.selected == $e)
+  }
+
+  mouseMove($event: MouseEvent){
+    if (this.captureMove) this.mouse.event = $event;
   }
 }
 </script>

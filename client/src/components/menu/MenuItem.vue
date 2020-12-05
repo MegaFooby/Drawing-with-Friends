@@ -23,6 +23,11 @@ import MenuItemGroup from "./MenuItemGroup.vue";
 
       if (this.selectable && (this.$parent instanceof MenuItemGroup || this.$parent instanceof Menu)) this.$parent.select(this);
     }
+
+    select(onlyThis?: boolean) {
+      if (onlyThis&& (this.$parent instanceof MenuItemGroup || this.$parent instanceof Menu))
+        this.$parent.deselectAll(this);
+    }
   }
 </script>
 <style lang="scss">

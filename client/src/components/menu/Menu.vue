@@ -18,8 +18,6 @@
 </template>
 <script lang="ts">
   import { Component, Prop, Vue } from "vue-property-decorator";
-  import drag from "v-drag";
-  Vue.use(drag);
   import MenuItem from "./MenuItem.vue";
 
 
@@ -45,7 +43,7 @@
     flex-direction: column;
     width: 2rem;
     height: fit-content;
-    border: 2px solid black;
+    border: $border-style;
     border-radius: 1rem;
 
     position: absolute !important;

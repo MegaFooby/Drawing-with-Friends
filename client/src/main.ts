@@ -2,13 +2,18 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
+
 import {
   FontAwesomeIcon,
   FontAwesomeLayers,
   FontAwesomeLayersText
 } from "@fortawesome/vue-fontawesome";
+
 import loadIcons from "./icons";
 import vuetify from "./plugins/vuetify";
+
+import drag from "v-drag";
+Vue.use(drag);
 
 Vue.config.productionTip = false;
 

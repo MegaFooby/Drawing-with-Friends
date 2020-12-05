@@ -16,3 +16,9 @@ import Canvas from "@/components/Canvas.vue"; // @ is an alias to /src
 })
 export default class Home extends Vue {}
 </script>
+<style lang="scss">
+  .home > img /* logo */ {
+    width: 80%;
+    max-width: 600px;
+  }
+</style>

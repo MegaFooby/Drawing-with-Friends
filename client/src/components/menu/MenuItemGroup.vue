@@ -4,7 +4,7 @@
         <font-awesome-icon :icon="selectedIcon"></font-awesome-icon>
       </div>
       <!-- {{selectedIcon || icon || title}} -->
-      <div class="group">
+      <div class="group" v-bind:class="groupClass">
         <div class="handle">
           <font-awesome-icon :icon="selectedIcon"></font-awesome-icon>
         </div>
@@ -21,6 +21,7 @@
   @Component({ name: 'menu-group' })
   export default class MenuItemGroup extends Vue {
     @Prop({default: 'More'}) title!:string;
+    @Prop({default: { }}) groupClass!: object;
     @Prop({default: 'question-circle'}) icon!: string;
     private iconKey = 1;
     private selectedItem!: MenuItem;
@@ -57,11 +58,12 @@
     }
 
     .group {
+      .handle { align-self: baseline; }
       display: none;
       opacity: 0;
 
       background: $menu-group-bg;
-      border-radius: $menu_item-radius;
+      border-radius: $menu-item-radius;
       position: absolute;
       left: 0;
       top: 0;

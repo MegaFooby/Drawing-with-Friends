@@ -10,23 +10,33 @@
     <menu-item :active="fill" @click="fill = !fill" icon="fill-drip" />
     <menu-item :active="active(move)" @click="activate(move, $event)" icon="arrows-alt" />
     <menu-item @click="receive('')" icon="sync-alt" />
-    <menu-item-group>
-      <color-picker :visible-formats="['hex']" color="color" @color-change="updateColor" copy-button="" />
+    <menu-item-group icon="palette" :groupClass="{ 'color-picker-group': true }">
+      <div class="color-picker">
+        <color-picker :visible-formats="['hex']" :color="color.toCSS()" @color-change="updateColor" copy-button="copy" />
+      </div>
     </menu-item-group>
   </Menu>
+  <Chat />
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import paper from "paper";
+
+import Chat from "@/components/Chat.vue";
+
 import Menu from "@/components/menu/Menu.vue";
 import MenuItem from "@/components/menu/MenuItem.vue";
 import MenuItemGroup from "@/components/menu/MenuItemGroup.vue";
-import {ColorPicker} from 'vue-accessible-color-picker';
+import { ColorPicker } from 'vue-accessible-color-picker';
 
 @Component({
   components: {
-    Menu, MenuItem, MenuItemGroup, ColorPicker
+    Menu,
+    MenuItem,
+    MenuItemGroup,
+    Chat,
+    ColorPicker
   }
 })
 export default class Canvas extends Vue {
@@ -40,8 +50,11 @@ export default class Canvas extends Vue {
   private pen = new paper.Tool();
   private square = new paper.Tool();
   private circle = new paper.Tool();
-  private move = new paper.Tool();
+
   private captureMove = false;
+  private showColours = true;
+
+  private move = new paper.Tool();
   private mouse: {
     last?: paper.Point,
     event?: MouseEvent,
@@ -143,6 +156,7 @@ export default class Canvas extends Vue {
     };
   }
 
+
   updateColor(eventData: ColorPicker.colors) {
     this.color = new paper.Color(eventData.colors.rgb.r,eventData.colors.rgb.g,eventData.colors.rgb.b);
   }
@@ -181,7 +195,7 @@ export default class Canvas extends Vue {
   }
 }
 </script>
-<style>
+<style lang="scss">
 body {
   height: 100%;
 }
@@ -202,4 +216,22 @@ a {
   top: 50vh;
   left: 0;
 }
+
+.color-picker {
+  width: 300px;
+  top: 50vh;
+  left: 4rem;
+}
+
+.color-picker-group {
+  border: $border-style;
+  .vacp-color-picker {
+    background-color: transparent;
+    .vacp-color-space {
+      border-radius: 0.75rem;
+    }
+  }
+}
+
+
 </style>

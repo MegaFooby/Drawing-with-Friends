@@ -21,7 +21,7 @@
   @Component({ name: 'menu-group' })
   export default class MenuItemGroup extends Vue {
     @Prop({default: 'More'}) title!:string;
-    @Prop({default: { }}) groupClass!: object;
+    @Prop({default: ''}) groupClass!: string | object;
     @Prop({default: 'question-circle'}) icon!: string;
     private iconKey = 1;
     private selectedItem!: MenuItem;

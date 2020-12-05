@@ -1,44 +1,140 @@
 <template>
-<div class="chat-container" v-drag="'.chat-handle'">
-  <div id="chat" :class="{open}">
-    <div id="chat-buttons">
-      <button id="close-chat">
-        <font-awesome-icon v-on:click="open = !open" icon="times-circle"></font-awesome-icon>
-      </button>
-      <font-awesome-icon class="chat-handle" icon="grip-lines"></font-awesome-icon>
+  <div class="chat-container" v-drag="'.chat-handle'">
+    <div id="chat" :class="{open}">
+      <div id="chat-buttons">
+        <button id="close-chat">
+          <font-awesome-icon v-on:click="open = !open" icon="times-circle"></font-awesome-icon>
+        </button>
+        <font-awesome-icon class="chat-handle" icon="grip-lines"></font-awesome-icon>
+      </div>
+      <div class="users"></div>
+      <ul id="messages" ref="msgs">
+        <span class="name" data-from="c3987a84-3acc-445a-95ab-46abf9baf7e0" style="color: rgb(0, 0, 0);">Keenan</span>
+        <li>hey</li><span class="time">7:06pm</span>
+        <li>Whats up</li><span class="time">7:06pm</span>
+        <li class="sent">nm u?</li><span class="time sent">7:06pm</span>
+        <li class="sent emojis">🙂</li><span class="time sent emojis">7:07pm</span>
+      </ul>
+      <div id="new-messages" v-if="newMessages">
+        <button id="scroll-to-bottom" @click="scrollToBottom()">
+          <i class="fas fa-arrow-down"></i>
+        </button>
+        <span>New Messages</span>
+      </div>
+      <form ref="form" v-on:submit.prevent="send()">
+        <input id="m" ref="msgInput" autocomplete="off" />
+        <font-awesome-icon class="send-btn" icon="arrow-right"></font-awesome-icon>
+      </form>
     </div>
-    <div class="users"></div>
-    <ul id="messages">
-      <span class="name" data-from="c3987a84-3acc-445a-95ab-46abf9baf7e0" style="color: rgb(0, 0, 0);">Keenan</span>
-      <li>hey</li><span class="time">7:06pm</span>
-      <li>Whats up</li><span class="time">7:06pm</span>
-      <li class="sent">nm u?</li><span class="time sent">7:06pm</span>
-      <li class="sent emojis">🙂</li><span class="time sent emojis">7:07pm</span>
-    </ul>
-    <div id="new-messages">
-      <button id="scroll-to-bottom">
-        <i class="fas fa-arrow-down"></i>
-      </button>
-      <span>New Messages</span>
+    <div class="closed" :class="{open}">
+      <font-awesome-icon class="chat-handle" icon="grip-lines-vertical"></font-awesome-icon>
+      <font-awesome-icon v-on:click="open = !open" icon="comments"></font-awesome-icon>
     </div>
-    <form>
-      <input id="m" autocomplete="off" />
-      <font-awesome-icon class="send-btn" icon="arrow-right"></font-awesome-icon>
-    </form>
   </div>
-  <div class="closed" :class="{open}">
-    <font-awesome-icon class="chat-handle" icon="grip-lines-vertical"></font-awesome-icon>
-    <font-awesome-icon v-on:click="open = !open" icon="comments"></font-awesome-icon>
-  </div>
-</div>
 </template>
 <script lang="ts">
   import { Component, Prop, Vue } from "vue-property-decorator";
+  import Emoji from "./helpers/emoji";
+
+  interface MessageObj {
+    msg?: string;
+    effect?: string;
+    from?: string;
+    name?: string;
+    colour?: string;
+    time?: string;
+  }
 
   /** A component to make menus have consistant styling and be movable */
   @Component
   export default class Chat extends Vue {
+    private readonly emoji = new Emoji();
+
     public open = false;
+
+    private lastMessage: MessageObj = {};
+    private currentlyScrolling = false;
+    private newMessages = false;
+
+    private user =  {
+      id: "0000-0000-0000-0000",
+      name: "Keenan"
+    }
+
+    mounted() {
+      const  x = 0;
+    }
+
+    send() {
+      const msgInput = this.$refs.msgInput as HTMLInputElement;
+      const msg = msgInput.value;
+      if (msg === '') return;
+
+      //socket.emit('chat message', {from: this.user.id, name: this.user.name, msg});
+      msgInput.value = '';
+      const getTime = () => {
+        const d = new Date();
+        const fixup = (num: number) => num.toString().padStart(2,'0')
+        const hr = (a: number) => a % 12 == 0 ? 12 : a % 12;
+        return `${hr(d.getHours())}:${fixup(d.getMinutes())}${d.getHours() < 12 ? 'a': 'p'}m`;
+      };
+      const [from, name] = Math.random() > 0.5 ? ["0000-0000-0000-0000", "Keenan"] : ["1111-1111-1111-1111", "Sun Bun"];
+      const m = {name, from, time: getTime(), msg, colour: 'cadetblue', effect: ''};
+      this.$emit('message', m);
+      this.onMessage(m);
+    }
+
+    scrollToBottom() {
+      const messages = this.$refs.msgs as Element;
+      //this.currentlyScrolling = true;
+      this.newMessages = false;
+
+      messages.scrollTop = messages.scrollHeight;
+      // $("#messages").stop();
+      // $("#messages").animate({ scrollTop: messages.scrollHeight }, 700, 'swing', ()=>this.currentlyScrolling=false);
+    }
+
+    //input msg object
+    onMessage(obj: Required<MessageObj>) {
+      const { effect, from: id, time, msg } = obj;
+      const { name, colour } = obj;
+      const emojis = this.emoji.only(msg), sent = id === this.user.id;
+      let ind;
+      const c = [effect || '', sent ? 'sent' :'', emojis ? 'emojis' : ''].filter(x => !!x);
+
+      //TODO: grab user list and update the name if needed?
+
+      const messages = this.$refs.msgs as Element;
+      const distfrombot = messages.scrollHeight - messages.scrollTop - messages.getBoundingClientRect().height;
+
+      if (!sent && (!this.lastMessage || this.lastMessage.from !== id)) {
+        const nameEl = document.createElement('span');
+        nameEl.classList.add('name', ...c);
+        nameEl.setAttribute('data-from', id);
+        nameEl.innerText = name;
+        nameEl.style.color = colour;
+        messages.append(nameEl);
+      }
+
+      const msgEl = document.createElement('li');
+      msgEl.classList.add(...c);
+      msgEl.innerHTML = emojis ? msg.replace(/\s+/g, '') : msg;
+      messages.append(msgEl);
+
+      const timeEl = document.createElement('span');
+      timeEl.classList.add('time', ...c);
+      timeEl.innerText = time;
+      messages.append(timeEl);
+
+      this.lastMessage = obj;
+
+      if ( !this.currentlyScrolling && distfrombot > messages.getBoundingClientRect().height / 2) // ask first
+        this.newMessages = true;
+      else 
+        this.scrollToBottom();
+
+    }
+
   }
 
 </script>

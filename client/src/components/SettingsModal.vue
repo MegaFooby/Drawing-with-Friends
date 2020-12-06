@@ -26,7 +26,7 @@
               <label for="username">Change Username:</label><br>
               <input type="text" id="username" name="username" value=""><br>
               <label for="newPW">Change Password:</label><br>
-              <input type="text" id="newPW" name="newPW" value=""><br><br>
+              <input type="text" id="newPW" name="newPW" value=""><br>
               <label for="newColor">Change Colour (Hex):</label><br>
               <input type="text" id="newColor" name="newColor" value=""><br><br>
           </slot>

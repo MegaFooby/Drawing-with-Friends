@@ -22,6 +22,10 @@
   "homepage": "https://github.com/MegaFooby/Drawing-with-Friends#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "mongoose": "^5.10.15"
+    "express-jwt": "^6.0.0",
+    "rootpath": "^0.1.2",
+    "bcryptjs": "^2.4.3",
+    "mongoose": "^5.10.15",
+    "cors": "^2.8.5"
   }
 }

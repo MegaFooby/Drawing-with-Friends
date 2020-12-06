@@ -1,4 +1,3 @@
-
 <script>
   export default{
     name: 'modal',
@@ -28,6 +27,8 @@
               <input type="text" id="username" name="username" value=""><br>
               <label for="newPW">Change Password:</label><br>
               <input type="text" id="newPW" name="newPW" value=""><br><br>
+              <label for="newColor">Change Colour (Hex):</label><br>
+              <input type="text" id="newColor" name="newColor" value=""><br><br>
           </slot>
         </section>
         <footer class="modal-footer">

@@ -23,8 +23,8 @@
         </header>
         <section class="modal-body" id="modalDescription">
           <slot name="body">
-              <label for="username">Change Username:</label><br>
-              <input type="text" id="username" name="username" value=""><br>
+              <label for="newUN">Change Username:</label><br>
+              <input type="text" id="newUN" name="newUN" value=""><br>
               <label for="newPW">Change Password:</label><br>
               <input type="text" id="newPW" name="newPW" value=""><br>
               <label for="newColor">Change Colour (Hex):</label><br>
@@ -72,31 +72,34 @@
 
   .modal-header {
     border-bottom: 1px solid #eeeeee;
-    color: #4AAE9B;
+    background: aliceblue;
+    color: rgb(1, 9, 17);
     justify-content: space-between;
   }
 
   .modal-footer {
+    background: aliceblue;
     border-top: 1px solid #eeeeee;
     justify-content: flex-end;
   }
 
   .modal-body {
+    background: aliceblue;
     position: relative;
     padding: 20px 10px;
   }
 
   .btn-close {
     color: white;
-    background: #4AAE9B;
-    border: 1px solid #4AAE9B;
+    background: rgb(119, 174, 223);
+    border: 1px solid #000000;
     border-radius: 2px;
   }
 
   .btn-green {
     color: white;
-    background: #4AAE9B;
-    border: 1px solid #4AAE9B;
+    background: aliceblue;
+    border: 1px solid #000000;
     border-radius: 2px;
   }
 </style>

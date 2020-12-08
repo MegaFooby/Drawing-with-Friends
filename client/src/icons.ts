@@ -16,6 +16,15 @@ import {
   faSquare,
   faCircle,
   faPen,
+  faTimesCircle,
+  faPalette,
+  faPaperPlane,
+  faArrowUp,
+  faArrowDown,
+  faArrowLeft,
+  faArrowRight,
+  faComments,
+  faGripLinesVertical,
 } from '@fortawesome/free-solid-svg-icons';
 
 export default function () {
@@ -30,5 +39,14 @@ export default function () {
     faSquare,
     faCircle,
     faPen,
+    faTimesCircle,
+    faPalette,
+    faPaperPlane,
+    faArrowUp,
+    faArrowDown,
+    faArrowLeft,
+    faArrowRight,
+    faComments,
+    faGripLinesVertical
   );
 }

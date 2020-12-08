@@ -1,3 +1,6 @@
+// prettier-ignore
+/* eslint-disable no-useless-escape */
+/* eslint-disable @typescript-eslint/camelcase */
 /** Handles emoji logic */
 export default class Emoji {
   // do this client side for real-time changes

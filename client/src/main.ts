@@ -13,7 +13,7 @@ import vuetify from "./plugins/vuetify";
 Vue.config.productionTip = false;
 
 // lets us ignore some errors thrown from the movable lib FOR NOW
-(window as any).data.move = {};
+(window as any).data.move = { style: {}}
 
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 Vue.component("font-awesome-layers", FontAwesomeLayers);

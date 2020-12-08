@@ -23,12 +23,11 @@
 </script>
 
 <template>
-
-  <div id="app">
+  <v-app id="app">
     <button type="button" class="btn" @click="showModal">Settings</button>
     <modal v-show="isModalVisible" @close="closeModal"/>
     <router-view />
-  </div>
+  </v-app>
 </template>
 
 <style lang="scss">

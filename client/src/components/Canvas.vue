@@ -70,7 +70,6 @@ export default class Canvas extends Vue {
 
     this.pen.onMouseDown = (event: paper.ToolEvent) => {
       this.path = new paper.Path();
-      console.log(this.color);
       this.path.strokeColor = this.color;
       this.setPath(this.path);
       this.path.add(event.point);
@@ -155,7 +154,6 @@ export default class Canvas extends Vue {
         this.scope.view.center = this.scope.view.center.add( new paper.Point(dx, dy));
     };
   }
-
 
   updateColor(eventData: ColorPicker.colors) {
     this.color = new paper.Color(eventData.colors.rgb.r,eventData.colors.rgb.g,eventData.colors.rgb.b);

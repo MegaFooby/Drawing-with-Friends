@@ -22,8 +22,8 @@
         <span>New Messages</span>
       </div>
       <form ref="form" v-on:submit.prevent="send()">
-        <input id="m" ref="msgInput" autocomplete="off" />
-        <font-awesome-icon class="send-btn" icon="arrow-right"></font-awesome-icon>
+        <input id="m" ref="msgInput" autocomplete="off" @keypress="keyWatcher()"/>
+        <font-awesome-icon class="send-btn" icon="arrow-right" v-on:click="send()"></font-awesome-icon>
       </form>
     </div>
     <div class="closed" :class="{open}">
@@ -135,6 +135,12 @@
 
     }
 
+    keyWatcher() {
+      const msgInput = this.$refs.msgInput as HTMLInputElement;
+      msgInput.classList.remove('error');
+      msgInput.value = this.emoji.emojify(msgInput.value);
+    }
+
   }
 
 </script>
@@ -218,6 +224,7 @@ input, button {
   left: -0.25rem;
   font-size: 1rem;
   padding: 0;
+  z-index: 100000;
 }
 
 #messages {

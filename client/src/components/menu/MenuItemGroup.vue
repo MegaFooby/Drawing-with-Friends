@@ -44,7 +44,6 @@
   }
 </script>
 <style lang="scss">
-
   .menu-item-group {
     height: $menu-item-height;
     position: relative;
@@ -65,10 +64,11 @@
       background: $menu-group-bg;
       border-radius: $menu-item-radius;
       position: absolute;
-      left: 0;
       top: 0;
 
+      left: 0;
       flex-direction: row;
+
       align-items: center;
       //padding-inline-start: 0.5rem;
       transition: opacity 0.3s;
@@ -80,5 +80,11 @@
         opacity: 1;
       }
     }
+  }
+
+  .right > .menu-item-group > .group {
+    left: unset;
+    right: 0;
+    flex-direction: row-reverse;
   }
 </style>

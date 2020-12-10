@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "npm": "npm i && cd client && npm i && cd ..",
+    "serve": "node index.js",
+    "client": "cd client && npm run serve",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,11 +21,12 @@
   },
   "homepage": "https://github.com/MegaFooby/Drawing-with-Friends#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-jwt": "^6.0.0",
-    "rootpath": "^0.1.2",
-    "bcryptjs": "^2.4.3",
     "mongoose": "^5.10.15",
-    "cors": "^2.8.5"
+    "rootpath": "^0.1.2",
+    "vue-accessible-color-picker": "^1.0.1"
   }
 }

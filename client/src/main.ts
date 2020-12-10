@@ -2,7 +2,13 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from '@fortawesome/vue-fontawesome'
+
+import {
+  FontAwesomeIcon,
+  FontAwesomeLayers,
+  FontAwesomeLayersText
+} from "@fortawesome/vue-fontawesome";
+
 import loadIcons from "./icons";
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -17,15 +23,19 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(faHome, faUser, faUserPlus, faSignInAlt, faSignOutAlt);
+import vuetify from "./plugins/vuetify";
+
+import drag from "v-drag";
+Vue.use(drag);
 
 Vue.config.productionTip = false;
 
 // lets us ignore some errors thrown from the movable lib FOR NOW
-(window as any).data.move = {}
+(window as any).data.move = { style: {}}
 
-Vue.component('font-awesome-icon', FontAwesomeIcon);
-Vue.component('font-awesome-layers', FontAwesomeLayers);
-Vue.component('font-awesome-layers-text', FontAwesomeLayersText);
+Vue.component("font-awesome-icon", FontAwesomeIcon);
+Vue.component("font-awesome-layers", FontAwesomeLayers);
+Vue.component("font-awesome-layers-text", FontAwesomeLayersText);
 
 loadIcons();
 
@@ -35,5 +45,6 @@ Vue.component('font-awesome-icon', FontAwesomeIcon);
 new Vue({
   router,
   store,
+  vuetify,
   render: h => h(App)
 }).$mount("#app");

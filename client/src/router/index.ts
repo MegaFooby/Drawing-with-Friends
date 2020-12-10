@@ -3,6 +3,8 @@ import VueRouter, { RouteConfig } from "vue-router";
 import Home from "../views/Home.vue";
 import Login from '../views/Login.vue';
 import Register from '../views/Register.vue';
+import RoomMenu from "../components/RoomMenu.vue";
+import Canvas from "../components/Canvas.vue";
 
 Vue.use(VueRouter);
 
@@ -26,10 +28,20 @@ const routes: Array<RouteConfig> = [
     // lazy-loaded
     component: () => import('../views/Profile.vue')
   },
+  {
+    path: "/rooms",
+    name: "Rooms",
+    component: RoomMenu,
+  },
+  {
+    path: "/room/:id",
+    name: "Canvas",
+    component: Canvas,
+  },
 ];
 
 const router = new VueRouter({
-  routes
+  routes,
 });
 
 router.beforeEach((to, from, next) => {

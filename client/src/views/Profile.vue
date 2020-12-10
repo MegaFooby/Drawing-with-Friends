@@ -1,7 +1,9 @@
 <template>
   <div class="col-md-12">
     <h1>Profile Page</h1>
-   
+    <button v-on:click="logout">
+        <span>Logout</span>
+    </button>
     <button v-on:click="testEndpoint">
         <span>Make Authenticated Request</span>
     </button>
@@ -34,6 +36,15 @@ export default {
     }
   },
   methods: {
+    logout() {
+      console.log("Trying to logout")
+      this.$store.dispatch('auth/logout').then(
+       () => {
+              this.$router.push('/login');
+            }
+      )
+    },
+
     testEndpoint() {
       console.log("Test");
             this.$store.dispatch('auth/current', this.user).then(
@@ -48,33 +59,6 @@ export default {
                 error.toString();
             }
           );
-    },
-    handleLogin() {
-      this.loading = true;
-      this.$validator.validateAll().then(isValid => {
-        if (!isValid) {
-          this.loading = false;
-          return;
-        }
-
-        if (this.user.username && this.user.password) {
-          this.$store.dispatch('auth/login', this.user).then(
-            () => {
-              this.$router.push('/profile');
-            },
-            error => {
-              this.loading = false;
-              this.message =
-                (error.response && error.response.data) ||
-                error.message ||
-                error.toString();
-            }
-          );
-        }
-      });
-    },
-    register() {
-      this.$router.push('/register');
     }
   }
 };

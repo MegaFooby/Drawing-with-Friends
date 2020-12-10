@@ -22,6 +22,7 @@
               >
             </v-card-title>
             <v-card-text v-text="room.name" class="text-h5"></v-card-text>
+            <v-card-text class="text-h6">Creator: {{room.creatorUsername}}</v-card-text>
           </v-card>
         </v-col>
 
@@ -70,6 +71,14 @@ export default class RoomMenu extends Vue {
     this.updateRoomsHeight();
   }
 
+  loggedIn() {
+    return this.$store.state.auth.status.loggedIn;
+  }
+
+  getUser(){
+    return this.$store.state.auth.user;
+  }
+
   destroyed() {
     window.removeEventListener("resize", this.updateRoomsHeight);
   }
@@ -107,6 +116,22 @@ export default class RoomMenu extends Vue {
         isPrivate: true,
       },
     ];
+
+    if(this.loggedIn()){
+      this.$store.dispatch('room/getall', this.getUser()).then(
+          response => {
+            console.log(response);
+            this.rooms = response;
+          },
+          error => {
+            const message =
+            (error.response && error.response.data) ||
+            error.message ||
+            error.toString();
+            console.log(message);
+          }
+      );
+    }
   }
 
   openRoom(room: Room) {
@@ -126,6 +151,7 @@ interface Room {
   id: string;
   name: string;
   isPrivate: boolean;
+  creatorUsername: string;
 }
 </script>
 <style lang="css" scoped>

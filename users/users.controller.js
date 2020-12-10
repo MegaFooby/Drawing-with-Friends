@@ -23,7 +23,6 @@ function authenticate(req, res, next) {
 
 //  localhost:4000/users/register -> POST {firstName, lastName, username, password}
 function register(req, res, next) {
-    console.log(req.body);
     userService.create(req.body)
         .then(() => res.json({}))
         .catch(err => next(err));

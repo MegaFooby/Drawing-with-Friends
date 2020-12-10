@@ -21,6 +21,7 @@ app.get('/', (req, res) => {            // Home request
 });
 
 app.use('/users', require('./users/users.controller'));     // Users api endpoints
+app.use('/rooms', require('./rooms/rooms.controller'));     // Rooms api endpoints
 
 app.use(errorHandler);
  

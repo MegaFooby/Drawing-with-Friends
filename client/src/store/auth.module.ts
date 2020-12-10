@@ -11,6 +11,20 @@ export const auth = {
   namespaced: true,
   state: initialState,
   actions: {
+    current({ commit }:any, user:any) {
+      console.log("Test2")
+      console.log(user);
+      return AuthService.current(user)//.then(
+      //   user => {
+      //     commit('loginSuccess', user);
+      //     return Promise.resolve(user);
+      //   },
+      //   error => {
+      //     commit('loginFailure');
+      //     return Promise.reject(error);
+      //   }
+      // );
+    },
     login({ commit }:any, user:any) {
       return AuthService.login(user).then(
         user => {

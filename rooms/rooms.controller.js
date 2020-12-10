@@ -13,7 +13,6 @@ router.delete('/:id', _delete);
 module.exports = router;
 
 function create(req, res, next) {
-    console.log(req.body);
     roomService.create(req.body)
         .then(() => res.json({}))
         .catch(err => next(err));

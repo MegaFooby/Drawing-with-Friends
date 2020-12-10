@@ -19,3 +19,4 @@ schema.set('toJSON', {
 });
 
 module.exports = mongoose.model('User', schema);
+console.log("Exported User Model");

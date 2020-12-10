@@ -10,8 +10,8 @@ import {
 } from "@fortawesome/vue-fontawesome";
 
 import loadIcons from "./icons";
-import 'bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 import VeeValidate from 'vee-validate';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {

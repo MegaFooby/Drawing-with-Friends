@@ -16,7 +16,6 @@ module.exports = router;
 // returns auth token which must be stored by client
 // localhost:4000/users/authenticate -> POST {username, password}
 function authenticate(req, res, next) {
-    console.log(req.body);
     userService.authenticate(req.body)
         .then(user => user ? res.json(user) : res.status(400).json({ message: 'Username or password is incorrect' }))
         .catch(err => next(err));
@@ -24,7 +23,6 @@ function authenticate(req, res, next) {
 
 //  localhost:4000/users/register -> POST {firstName, lastName, username, password}
 function register(req, res, next) {
-    console.log(req.body);
     userService.create(req.body)
         .then(() => res.json({}))
         .catch(err => next(err));

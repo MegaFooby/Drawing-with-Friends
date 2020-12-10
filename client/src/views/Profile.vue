@@ -37,7 +37,6 @@ export default {
   },
   methods: {
     logout() {
-      console.log("Trying to logout")
       this.$store.dispatch('auth/logout').then(
        () => {
               this.$router.push('/login');
@@ -46,18 +45,17 @@ export default {
     },
 
     testEndpoint() {
-      console.log("Test");
-            this.$store.dispatch('auth/current', this.user).then(
-            response => {
-              this.message = response;
-            },
-            error => {
-              this.loading = false;
-              this.message =
-                (error.response && error.response.data) ||
-                error.message ||
-                error.toString();
-            }
+      this.$store.dispatch('auth/current', this.user).then(
+        response => {
+          this.message = response;
+        },
+        error => {
+          this.loading = false;
+          this.message =
+          (error.response && error.response.data) ||
+          error.message ||
+          error.toString();
+          }
           );
     }
   }

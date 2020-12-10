@@ -101,7 +101,6 @@ export default {
   },
   mounted() {
     if (this.loggedIn) {
-      console.log(this.loggedIn)
       this.$router.push('/profile');
     }
   },

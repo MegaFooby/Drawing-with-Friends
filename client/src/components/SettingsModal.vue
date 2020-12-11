@@ -52,6 +52,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 10001;
   }
 
   .modal {
@@ -61,7 +62,7 @@
     display: flex;
     flex-direction: column;
     position: absolute;
-    z-index: 2;
+    z-index: 10001;
   }
 
   .modal-header,

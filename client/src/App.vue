@@ -39,7 +39,10 @@
   text-align: center;
   color: #2c3e50;
 }
-
+.btn{
+  position: absolute;
+  z-index: 10000;
+}
 #nav {
   padding: 30px;
 

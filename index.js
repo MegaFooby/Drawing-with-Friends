@@ -46,10 +46,16 @@ io.on('connection', (socket) => {
 
     socket.emit('connected', {message:"hi"});
 
+    socket.on('connected', (id) => {
+        socket.room = id;
+        socket.join(id); 
+        console.log("Connecting to room " + id);
+    });
+
     socket.on('draw', (data) =>{
         console.log("Got drawing");
         console.log(data);
-        io.emit('draw', data);
+        socket.broadcast.to(data.id).emit('draw', data);
     });
 });
 

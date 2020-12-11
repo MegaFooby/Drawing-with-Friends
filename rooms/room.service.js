@@ -23,9 +23,11 @@ async function getById(id) {
 
 async function create(RoomParam) {
     if (await Room.findOne({ name: RoomParam.name })) {
+        console.log("Room name taken");
         throw 'Roomname "' + RoomParam.name + '" is already taken';
     }
     const room = new Room(RoomParam);
+    console.log("Made room");
     await room.save();
 }
 

@@ -77,10 +77,12 @@ export default class Canvas extends Vue {
         console.log("Server said: "+data.message);
     });
 
+    socket.emit('connected', this.$route.query.id);
+
     socket.on('draw', (data) => {
       console.log("Got a drawing from server");
       const p = new paper.Path();
-      p.importJSON(data);
+      p.importJSON(data.json);
     });
 
   }
@@ -185,14 +187,11 @@ export default class Canvas extends Vue {
   //run this at every onMouseUp to send this to the server
   send() {
     const json = this.path.exportJSON([true, 5]); //number is float precision
-    socket.emit("draw", json);
-  }
-
-  receive(json: string) {
-    json =
-      '["Path",{"applyMatrix":true,"segments":[[431,319],[431,85],[968,85],[968,319]],"closed":true,"strokeColor":[0,0,0]}]';
-    const p = new paper.Path();
-    p.importJSON(json);
+    const payload = {
+      json: json, 
+      id: this.$route.query.id
+    };
+    socket.emit("draw", payload);
   }
 
   setPath(path: paper.Path) {

@@ -1,15 +1,18 @@
 <template>
   <div>
-  <canvas id="myCanvas" resize></canvas>
-  <Menu tag="nav" class="drawing-palette" >
-    <menu-item-group title="Tools" icon="pencil-ruler" ref="tools">
-      <menu-item @click="activate(pen, $event)"    icon="pen" />
-      <menu-item @click="activate(square, $event)" icon="square" />
-      <menu-item @click="activate(circle, $event)" icon="circle" />
-    </menu-item-group>
-    <menu-item v-bind:active="fill" @click="fill = !fill" icon="fill-drip" />
-    <menu-item @click="receive('')" icon="sync-alt" />
-  </Menu>
+    <button type="button" class="btn" @click="showModal">Settings</button>
+    <modal v-show="isModalVisible" @close="closeModal" />
+    <img alt="Vue logo" src="../assets/logo.png" />
+    <canvas id="myCanvas" resize></canvas>
+    <Menu tag="nav" class="drawing-palette">
+      <menu-item-group title="Tools" icon="pencil-ruler" ref="tools">
+        <menu-item @click="activate(pen, $event)" icon="pen" />
+        <menu-item @click="activate(square, $event)" icon="square" />
+        <menu-item @click="activate(circle, $event)" icon="circle" />
+      </menu-item-group>
+      <menu-item v-bind:active="fill" @click="fill = !fill" icon="fill-drip" />
+      <menu-item @click="receive('')" icon="sync-alt" />
+    </Menu>
   </div>
 </template>
 <script lang="ts">
@@ -18,10 +21,14 @@ import paper from "paper";
 import Menu from "@/components/menu/Menu.vue";
 import MenuItem from "@/components/menu/MenuItem.vue";
 import MenuItemGroup from "@/components/menu/MenuItemGroup.vue";
+import modal from "@/components/SettingsModal.vue";
 
 @Component({
   components: {
-    Menu, MenuItem, MenuItemGroup
+    Menu,
+    MenuItem,
+    MenuItemGroup,
+    modal
   }
 })
 export default class Canvas extends Vue {
@@ -36,6 +43,7 @@ export default class Canvas extends Vue {
   private square!: paper.Tool;
   private circle!: paper.Tool;
   private selected!: MenuItem;
+  private isModalVisible = false;
 
   mounted() {
     this.scope = new paper.PaperScope();
@@ -132,6 +140,14 @@ export default class Canvas extends Vue {
   activate(tool: paper.Tool, $e: MenuItem) {
     tool.activate();
   }
+
+  showModal() {
+    this.isModalVisible = true;
+  }
+
+  closeModal() {
+    this.isModalVisible = false;
+  }
 }
 </script>
 <style>
@@ -153,6 +169,13 @@ a {
 
 .drawing-palette {
   top: 50vh;
+  left: 0;
+}
+
+.btn {
+  position: absolute;
+  z-index: 10000;
+  top: 0;
   left: 0;
 }
 </style>

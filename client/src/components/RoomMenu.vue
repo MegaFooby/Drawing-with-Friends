@@ -1,5 +1,7 @@
 <template>
   <div class="d-flex flex-column view" ref="window">
+    <button type="button" class="btn" @click="showModal">Settings</button>
+    <modal v-show="isModalVisible" @close="closeModal" />
     <v-img src="../assets/logo.png" contain max-height="125" ref="logo"></v-img>
     <v-container
       fluid
@@ -54,13 +56,18 @@
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-
-@Component
+import modal from "@/components/SettingsModal.vue";
+@Component({
+  components: {
+    modal
+  }
+})
 export default class RoomMenu extends Vue {
   private rooms: Room[] = [];
 
   roomsHeight = 0;
 
+  isModalVisible = false;
   created() {
     this.getRooms();
     window.addEventListener("resize", this.updateRoomsHeight);
@@ -89,23 +96,23 @@ export default class RoomMenu extends Vue {
       {
         id: "some-uuid",
         name: "Room 1",
-        isPrivate: false,
+        isPrivate: false
       },
       {
         id: "some-other-uuid",
         name: "Room 2",
-        isPrivate: true,
+        isPrivate: true
       },
       {
         id: "some-other-uuid2",
         name: "Room 3",
-        isPrivate: true,
+        isPrivate: true
       },
       {
         id: "some-other-uuid3",
         name: "Room 4",
-        isPrivate: true,
-      },
+        isPrivate: true
+      }
     ];
   }
 
@@ -120,14 +127,21 @@ export default class RoomMenu extends Vue {
   logout() {
     this.$router.push("/logout");
   }
-}
 
+  showModal() {
+    this.isModalVisible = true;
+  }
+  closeModal() {
+    this.isModalVisible = false;
+  }
+}
 interface Room {
   id: string;
   name: string;
   isPrivate: boolean;
 }
 </script>
+
 <style lang="css" scoped>
 .view {
   height: 100%;
@@ -135,5 +149,11 @@ interface Room {
 .rooms {
   overflow-y: auto;
   height: 100%;
+}
+.btn {
+  position: absolute;
+  z-index: 10000;
+  top: 0;
+  left: 0;
 }
 </style>

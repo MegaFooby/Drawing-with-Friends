@@ -14,14 +14,14 @@ router.delete('/:id', _delete);
 module.exports = router;
 
 // returns auth token which must be stored by client
-// localhost:4000/users/authenticate -> POST {username, password}
+// localhost:3000/users/authenticate -> POST {username, password}
 function authenticate(req, res, next) {
     userService.authenticate(req.body)
         .then(user => user ? res.json(user) : res.status(400).json({ message: 'Username or password is incorrect' }))
         .catch(err => next(err));
 }
 
-//  localhost:4000/users/register -> POST {firstName, lastName, username, password}
+//  localhost:3000/users/register -> POST {firstName, lastName, username, password}
 function register(req, res, next) {
     userService.create(req.body)
         .then(() => res.json({}))

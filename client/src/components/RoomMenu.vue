@@ -93,34 +93,9 @@ export default class RoomMenu extends Vue {
 
   getRooms() {
     //TODO get rooms from backend
-
-    this.rooms = [
-      {
-        id: "some-uuid",
-        name: "Room 1",
-        isPrivate: false,
-      },
-      {
-        id: "some-other-uuid",
-        name: "Room 2",
-        isPrivate: true,
-      },
-      {
-        id: "some-other-uuid2",
-        name: "Room 3",
-        isPrivate: true,
-      },
-      {
-        id: "some-other-uuid3",
-        name: "Room 4",
-        isPrivate: true,
-      },
-    ];
-
     if(this.loggedIn()){
       this.$store.dispatch('room/getall', this.getUser()).then(
           response => {
-            console.log(response);
             this.rooms = response;
           },
           error => {
@@ -135,7 +110,7 @@ export default class RoomMenu extends Vue {
   }
 
   openRoom(room: Room) {
-    this.$router.push("/room/" + room.id);
+    this.$router.push({ path: "/room/" + room.id, query:{id: room.id} });
   }
 
   createRoom() {

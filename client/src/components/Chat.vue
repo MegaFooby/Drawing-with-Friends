@@ -28,13 +28,16 @@
     </div>
     <div class="closed" :class="{open}">
       <font-awesome-icon class="chat-handle" icon="grip-lines-vertical"></font-awesome-icon>
+      <font-awesome-icon v-on:click="goToRooms()" icon="arrow-left"></font-awesome-icon>
       <font-awesome-icon v-on:click="open = !open" icon="comments"></font-awesome-icon>
     </div>
   </div>
 </template>
 <script lang="ts">
   import { Component, Prop, Vue } from "vue-property-decorator";
+  import SocketService from '../services/socket-io.service';
   import Emoji from "./helpers/emoji";
+  import { getTime } from '../plugins/time';
 
   interface MessageObj {
     msg?: string;
@@ -48,6 +51,7 @@
   /** A component to make menus have consistant styling and be movable */
   @Component
   export default class Chat extends Vue {
+    [x: string]: any;
     private readonly emoji = new Emoji();
 
     public open = false;
@@ -56,13 +60,12 @@
     private currentlyScrolling = false;
     private newMessages = false;
 
-    private user =  {
-      id: "0000-0000-0000-0000",
-      name: "Keenan"
-    }
-
     mounted() {
       const  x = 0;
+    }
+
+    goToRooms() {
+      this.$router.push('/rooms');
     }
 
     send() {
@@ -70,16 +73,10 @@
       const msg = msgInput.value;
       if (msg === '') return;
 
-      //socket.emit('chat message', {from: this.user.id, name: this.user.name, msg});
+      SocketService.sendMsg(this.$route.query.id, msg);
       msgInput.value = '';
-      const getTime = () => {
-        const d = new Date();
-        const fixup = (num: number) => num.toString().padStart(2,'0')
-        const hr = (a: number) => a % 12 == 0 ? 12 : a % 12;
-        return `${hr(d.getHours())}:${fixup(d.getMinutes())}${d.getHours() < 12 ? 'a': 'p'}m`;
-      };
-      const [from, name] = Math.random() > 0.5 ? ["0000-0000-0000-0000", "Keenan"] : ["1111-1111-1111-1111", "Sun Bun"];
-      const m = {name, from, time: getTime(), msg, colour: 'cadetblue', effect: ''};
+
+      const m = {name: this.$store.state.auth.user.username, from: this.$store.state.auth.user.id, time: getTime(), msg, colour: 'cadetblue', effect: ''};
       this.$emit('message', m);
       this.onMessage(m);
     }
@@ -98,7 +95,7 @@
     onMessage(obj: Required<MessageObj>) {
       const { effect, from: id, time, msg } = obj;
       const { name, colour } = obj;
-      const emojis = this.emoji.only(msg), sent = id === this.user.id;
+      const emojis = this.emoji.only(msg), sent = id === this.$store.state.auth.user.id;
       let ind;
       const c = [effect || '', sent ? 'sent' :'', emojis ? 'emojis' : ''].filter(x => !!x);
 
@@ -141,6 +138,11 @@
       msgInput.value = this.emoji.emojify(msgInput.value);
     }
 
+    recieve(msg) {
+      console.log(msg);
+      this.onMessage(msg);
+    }
+
   }
 
 </script>
@@ -154,7 +156,7 @@
     z-index: 10000;
     display: flex;
     height: 2rem;
-    width: 3.5rem;
+    width: 5rem;
     border: 2px solid black;
     border-radius: 1rem;
     font-size: 1rem;
@@ -165,6 +167,9 @@
     top: 0;
     left: 0;
     background-color: $menu-bg;
+  }
+  .closed * {
+    margin: 0px 5px;
   }
   #handle {
     user-select: none;

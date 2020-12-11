@@ -27,19 +27,24 @@
         </div>
       </menu-item-group>
     </Menu>
-    <Chat />
+    <Chat ref="chat"></Chat>
   </div>
 </template>
+<script src="/socket.io/socket.io.js"></script>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
+import { ColorPicker } from "vue-accessible-color-picker";
 import paper from "paper";
 
-import Chat from "@/components/Chat.vue";
+import SocketService from "../services/socket-io.service";
 
-import Menu from "@/components/menu/Menu.vue";
-import MenuItem from "@/components/menu/MenuItem.vue";
-import MenuItemGroup from "@/components/menu/MenuItemGroup.vue";
-import { ColorPicker } from "vue-accessible-color-picker";
+import Chat from "./Chat.vue";
+import Menu from "./menu/Menu.vue";
+import MenuItem from "./menu/MenuItem.vue";
+import MenuItemGroup from "./menu/MenuItemGroup.vue";
+
+const socket = SocketService.socket;
+
 
 @Component({
   components: {
@@ -51,6 +56,7 @@ import { ColorPicker } from "vue-accessible-color-picker";
   }
 })
 export default class Canvas extends Vue {
+  private roomId = this.$route.query.id;
   private color = new paper.Color(0, 0, 0);
   private fill = false;
   private width = 5;
@@ -72,6 +78,37 @@ export default class Canvas extends Vue {
   } = {};
 
   private selected!: MenuItem;
+
+  created(){
+    console.log("Current room id: "+this.$route.query.id);
+
+    socket.on('connected', (data) => {
+        console.log("Server said: "+data.message);
+    });
+
+    socket.on('drawHistory', (history) => {                 // import canvas from server's database
+        console.log("Recieving drawing database history");
+        console.log(history);
+        var drawing;
+        for(drawing in history){
+          const p = new paper.Path();
+          p.importJSON(history[drawing].json);
+        }
+    });
+
+    socket.emit('connected', this.$route.query.id);
+
+    socket.on('draw', (data) => {
+      console.log("Got a drawing from server");
+      const p = new paper.Path();
+      p.importJSON(data.json);
+    });
+
+    socket.on('chat-msg', (msg) => {
+      console.log("Got message:"+msg);
+      this.$refs.chat.recieve(msg);
+    })
+  }
 
   mounted() {
     this.scope = new paper.PaperScope();
@@ -206,12 +243,11 @@ export default class Canvas extends Vue {
   //run this at every onMouseUp to send this to the server
   send() {
     const json = this.path.exportJSON([true, 5]); //number is float precision
-    //send json to server
-  }
-
-  receive(drawingJson: string) {
-    const p = new paper.Path();
-    p.importJSON(drawingJson);
+    const payload = {
+      json: json, 
+      roomid: this.$route.query.id
+    };
+    socket.emit("draw", payload);
   }
 
   setPath(path: paper.Path) {

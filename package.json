@@ -28,6 +28,7 @@
     "express-jwt": "^6.0.0",
     "mongoose": "^5.10.15",
     "rootpath": "^0.1.2",
+    "socket.io": "^3.0.4",
     "vue-accessible-color-picker": "^1.0.1"
   }
 }

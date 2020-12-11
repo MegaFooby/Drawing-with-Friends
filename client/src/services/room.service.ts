@@ -1,7 +1,6 @@
 import axios from 'axios';
 import authHeader from './auth-header';
-
-const API_URL = 'http://localhost:4000/';
+import { API_URL } from './socket-io.service';
 
 class RoomService {
   getall(user:any) {
@@ -10,7 +9,6 @@ class RoomService {
         user: user.username
       }, {headers: authHeader()})
       .then(response => {
-        console.log("Heyyyyy");
         return response.data;
       });
   }

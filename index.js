@@ -13,7 +13,9 @@ const io = require('socket.io')(http, {
     cors: {
       origin: '*',
     }
-  });
+});
+const db = require('helpers/db');
+const Drawing = db.Drawing;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -49,13 +51,17 @@ io.on('connection', (socket) => {
     socket.on('connected', (id) => {
         socket.room = id;
         socket.join(id); 
+        const drawing = Drawing.find({roomid: id},(err, drawings) => {socket.emit('drawHistory', drawings);});
+        console.log("Drawings found:"+drawing);
         console.log("Connecting to room " + id);
     });
 
     socket.on('draw', (data) =>{
         console.log("Got drawing");
         console.log(data);
-        socket.broadcast.to(data.id).emit('draw', data);
+        socket.broadcast.to(data.roomid).emit('draw', data);
+        const drawing = new Drawing(data);
+        drawing.save();
     });
 });
 

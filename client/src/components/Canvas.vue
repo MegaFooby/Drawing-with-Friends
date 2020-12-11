@@ -31,7 +31,11 @@ import MenuItem from "@/components/menu/MenuItem.vue";
 import MenuItemGroup from "@/components/menu/MenuItemGroup.vue";
 import { ColorPicker } from 'vue-accessible-color-picker';
 
-var socket = require('socket.io-client')('http://localhost:3000');
+var socket = require('socket.io-client')('http://localhost:3000', {
+    cors: {
+      origin: '*',
+    }
+});
 
 @Component({
   components: {
@@ -69,12 +73,18 @@ export default class Canvas extends Vue {
   created(){
     console.log("Current room id: "+this.$route.query.id);
 
-    window.onbeforeunload = () => {
-        socket.emit('leave', this.username);
-    }
-
     socket.on('connected', (data) => {
         console.log("Server said: "+data.message);
+    });
+
+    socket.on('drawHistory', (history) => {                 // import canvas from server's database
+        console.log("Recieving drawing database history");
+        console.log(history);
+        var drawing;
+        for(drawing in history){
+          const p = new paper.Path();
+          p.importJSON(history[drawing].json);
+        }
     });
 
     socket.emit('connected', this.$route.query.id);
@@ -189,7 +199,7 @@ export default class Canvas extends Vue {
     const json = this.path.exportJSON([true, 5]); //number is float precision
     const payload = {
       json: json, 
-      id: this.$route.query.id
+      roomid: this.$route.query.id
     };
     socket.emit("draw", payload);
   }

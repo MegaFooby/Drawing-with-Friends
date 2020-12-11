@@ -1,22 +1,33 @@
 <template>
   <div @mousemove="mouseMove($event)">
-  <canvas id="myCanvas" resize></canvas>
-  <Menu tag="nav" class="drawing-palette" >
-    <menu-item-group title="Tools" icon="pencil-ruler" ref="tools">
-      <menu-item @click="activate(pen, $event)"    icon="pen" />
-      <menu-item @click="activate(square, $event)" icon="square" />
-      <menu-item @click="activate(circle, $event)" icon="circle" />
-    </menu-item-group>
-    <menu-item :active="fill" @click="fill = !fill" icon="fill-drip" />
-    <menu-item :active="active(move)" @click="activate(move, $event)" icon="arrows-alt" />
-    <menu-item @click="receive('')" icon="sync-alt" />
-    <menu-item-group icon="palette" :groupClass="{ 'color-picker-group': true }">
-      <div class="color-picker">
-        <color-picker :visible-formats="['hex']" :color="color.toCSS()" @color-change="updateColor" copy-button="copy" />
-      </div>
-    </menu-item-group>
-  </Menu>
-  <Chat />
+    <canvas id="myCanvas" resize></canvas>
+    <Menu tag="nav" class="drawing-palette">
+      <menu-item-group title="Tools" icon="pencil-ruler" ref="tools">
+        <menu-item @click="activate(pen, $event)" icon="pen" />
+        <menu-item @click="activate(square, $event)" icon="square" />
+        <menu-item @click="activate(circle, $event)" icon="circle" />
+      </menu-item-group>
+      <menu-item :active="fill" @click="fill = !fill" icon="fill-drip" />
+      <menu-item
+        :active="active(move)"
+        @click="activate(move, $event)"
+        icon="arrows-alt"
+      />
+      <menu-item-group
+        icon="palette"
+        :groupClass="{ 'color-picker-group': true }"
+      >
+        <div class="color-picker">
+          <color-picker
+            :visible-formats="['hex']"
+            :color="color.toCSS()"
+            @color-change="updateColor"
+            copy-button="copy"
+          />
+        </div>
+      </menu-item-group>
+    </Menu>
+    <Chat />
   </div>
 </template>
 <script lang="ts">
@@ -28,7 +39,7 @@ import Chat from "@/components/Chat.vue";
 import Menu from "@/components/menu/Menu.vue";
 import MenuItem from "@/components/menu/MenuItem.vue";
 import MenuItemGroup from "@/components/menu/MenuItemGroup.vue";
-import { ColorPicker } from 'vue-accessible-color-picker';
+import { ColorPicker } from "vue-accessible-color-picker";
 
 @Component({
   components: {
@@ -56,8 +67,8 @@ export default class Canvas extends Vue {
 
   private move = new paper.Tool();
   private mouse: {
-    last?: paper.Point,
-    event?: MouseEvent,
+    last?: paper.Point;
+    event?: MouseEvent;
   } = {};
 
   private selected!: MenuItem;
@@ -93,11 +104,23 @@ export default class Canvas extends Vue {
 
     this.square.onMouseDrag = (event: paper.ToolEvent) => {
       let x = Math.abs((event.point.x - startPoint.x) / this.path.bounds.width);
-      let y = Math.abs((event.point.y - startPoint.y) / this.path.bounds.height);
-      if((event.point.x < startPoint.x && this.path.bounds.center.x > startPoint.x) || (event.point.x > startPoint.x && this.path.bounds.center.x < startPoint.x)) {
+      let y = Math.abs(
+        (event.point.y - startPoint.y) / this.path.bounds.height
+      );
+      if (
+        (event.point.x < startPoint.x &&
+          this.path.bounds.center.x > startPoint.x) ||
+        (event.point.x > startPoint.x &&
+          this.path.bounds.center.x < startPoint.x)
+      ) {
         x = -x;
       }
-      if((event.point.y < startPoint.y && this.path.bounds.center.y > startPoint.y) || (event.point.y > startPoint.y && this.path.bounds.center.y < startPoint.y)) {
+      if (
+        (event.point.y < startPoint.y &&
+          this.path.bounds.center.y > startPoint.y) ||
+        (event.point.y > startPoint.y &&
+          this.path.bounds.center.y < startPoint.y)
+      ) {
         y = -y;
       }
       if (x != 0 && y != 0) {
@@ -119,11 +142,23 @@ export default class Canvas extends Vue {
 
     this.circle.onMouseDrag = (event: paper.ToolEvent) => {
       let x = Math.abs((event.point.x - startPoint.x) / this.path.bounds.width);
-      let y = Math.abs((event.point.y - startPoint.y) / this.path.bounds.height);
-      if((event.point.x < startPoint.x && this.path.bounds.center.x > startPoint.x) || (event.point.x > startPoint.x && this.path.bounds.center.x < startPoint.x)) {
+      let y = Math.abs(
+        (event.point.y - startPoint.y) / this.path.bounds.height
+      );
+      if (
+        (event.point.x < startPoint.x &&
+          this.path.bounds.center.x > startPoint.x) ||
+        (event.point.x > startPoint.x &&
+          this.path.bounds.center.x < startPoint.x)
+      ) {
         x = -x;
       }
-      if((event.point.y < startPoint.y && this.path.bounds.center.y > startPoint.y) || (event.point.y > startPoint.y && this.path.bounds.center.y < startPoint.y)) {
+      if (
+        (event.point.y < startPoint.y &&
+          this.path.bounds.center.y > startPoint.y) ||
+        (event.point.y > startPoint.y &&
+          this.path.bounds.center.y < startPoint.y)
+      ) {
         y = -y;
       }
       if (x != 0 && y != 0) {
@@ -134,14 +169,15 @@ export default class Canvas extends Vue {
     this.circle.onMouseUp = this.send;
 
     this.move = new paper.Tool();
-    this.move.onMouseDown = (event: paper.ToolEvent) => this.captureMove = false;
+    this.move.onMouseDown = (event: paper.ToolEvent) =>
+      (this.captureMove = false);
     this.move.onMouseDown = (event: paper.ToolEvent) => {
       this.captureMove = true;
       this.mouse.last = undefined;
     };
     this.move.onMouseDrag = (event: paper.ToolEvent) => {
       let dx, dy;
-      if(this.mouse.last && this.mouse.event) {
+      if (this.mouse.last && this.mouse.event) {
         dx = this.mouse.last.x - this.mouse.event.clientX;
         dy = this.mouse.last.y - this.mouse.event.clientY;
       } else {
@@ -149,14 +185,22 @@ export default class Canvas extends Vue {
         dy = -event.delta.y;
       }
 
-      this.mouse.last = this.mouse.event ? new paper.Point(this.mouse.event.clientX, this.mouse.event.clientY) : undefined;
+      this.mouse.last = this.mouse.event
+        ? new paper.Point(this.mouse.event.clientX, this.mouse.event.clientY)
+        : undefined;
       if (dx !== 0 || dy !== 0)
-        this.scope.view.center = this.scope.view.center.add( new paper.Point(dx, dy));
+        this.scope.view.center = this.scope.view.center.add(
+          new paper.Point(dx, dy)
+        );
     };
   }
 
   updateColor(eventData: ColorPicker.colors) {
-    this.color = new paper.Color(eventData.colors.rgb.r,eventData.colors.rgb.g,eventData.colors.rgb.b);
+    this.color = new paper.Color(
+      eventData.colors.rgb.r,
+      eventData.colors.rgb.g,
+      eventData.colors.rgb.b
+    );
   }
 
   //run this at every onMouseUp to send this to the server
@@ -165,11 +209,9 @@ export default class Canvas extends Vue {
     //send json to server
   }
 
-  receive(json: string) {
-    json =
-      '["Path",{"applyMatrix":true,"segments":[[431,319],[431,85],[968,85],[968,319]],"closed":true,"strokeColor":[0,0,0]}]';
+  receive(drawingJson: string) {
     const p = new paper.Path();
-    p.importJSON(json);
+    p.importJSON(drawingJson);
   }
 
   setPath(path: paper.Path) {
@@ -185,10 +227,10 @@ export default class Canvas extends Vue {
   }
 
   active($e: MenuItem) {
-    return !!(this.selected && this.selected == $e)
+    return !!(this.selected && this.selected == $e);
   }
 
-  mouseMove($event: MouseEvent){
+  mouseMove($event: MouseEvent) {
     if (this.captureMove) this.mouse.event = $event;
   }
 }
@@ -230,6 +272,4 @@ a {
     }
   }
 }
-
-
 </style>

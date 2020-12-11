@@ -27,7 +27,7 @@
         </div>
       </menu-item-group>
     </Menu>
-    <Chat />
+    <Chat ref="chat"></Chat>
   </div>
 </template>
 <script src="/socket.io/socket.io.js"></script>
@@ -106,6 +106,10 @@ export default class Canvas extends Vue {
       p.importJSON(data.json);
     });
 
+    socket.on('chat-msg', (msg) => {
+      console.log("Got message:"+msg);
+      this.$refs.chat.recieve(msg);
+    })
   }
 
   mounted() {
@@ -246,6 +250,29 @@ export default class Canvas extends Vue {
       roomid: this.$route.query.id
     };
     socket.emit("draw", payload);
+  }
+
+  getTime = () => {
+    const d = new Date();
+    const fixup = (num: number) => num.toString().padStart(2,'0')
+    const hr = (a: number) => a % 12 == 0 ? 12 : a % 12;
+    return `${hr(d.getHours())}:${fixup(d.getMinutes())}${d.getHours() < 12 ? 'a': 'p'}m`;
+  };
+
+  sendMsg(message){
+    console.log("Sending message: "+message);
+    const payload = {
+      roomid: this.$route.query.id,
+      msg: {
+        name: this.$store.state.auth.user.username,
+        from: this.$store.state.auth.user.id,
+        time: this.getTime(),
+        msg: message,
+        colour: "black",         // TODO: colors for users
+        effect: "",
+      }
+    }
+    socket.emit('chat-msg', payload)
   }
 
   setPath(path: paper.Path) {

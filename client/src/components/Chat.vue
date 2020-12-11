@@ -74,17 +74,16 @@
       const msgInput = this.$refs.msgInput as HTMLInputElement;
       const msg = msgInput.value;
       if (msg === '') return;
-
-      //socket.emit('chat message', {from: this.user.id, name: this.user.name, msg});
+      this.$parent.sendMsg(msg);
       msgInput.value = '';
+
       const getTime = () => {
         const d = new Date();
         const fixup = (num: number) => num.toString().padStart(2,'0')
         const hr = (a: number) => a % 12 == 0 ? 12 : a % 12;
         return `${hr(d.getHours())}:${fixup(d.getMinutes())}${d.getHours() < 12 ? 'a': 'p'}m`;
       };
-      const [from, name] = Math.random() > 0.5 ? ["0000-0000-0000-0000", "Keenan"] : ["1111-1111-1111-1111", "Sun Bun"];
-      const m = {name, from, time: getTime(), msg, colour: 'cadetblue', effect: ''};
+      const m = {name, from: this.$store.state.auth.user.id, time: getTime(), msg, colour: 'cadetblue', effect: ''};
       this.$emit('message', m);
       this.onMessage(m);
     }
@@ -103,7 +102,7 @@
     onMessage(obj: Required<MessageObj>) {
       const { effect, from: id, time, msg } = obj;
       const { name, colour } = obj;
-      const emojis = this.emoji.only(msg), sent = id === this.user.id;
+      const emojis = this.emoji.only(msg), sent = id === this.$store.state.auth.user.id;
       let ind;
       const c = [effect || '', sent ? 'sent' :'', emojis ? 'emojis' : ''].filter(x => !!x);
 
@@ -144,6 +143,10 @@
       const msgInput = this.$refs.msgInput as HTMLInputElement;
       msgInput.classList.remove('error');
       msgInput.value = this.emoji.emojify(msgInput.value);
+    }
+    recieve(msg) {
+      console.log(msg);
+      this.onMessage(msg);
     }
 
   }

@@ -63,6 +63,12 @@ io.on('connection', (socket) => {
         const drawing = new Drawing(data);
         drawing.save();
     });
+
+    socket.on('chat-msg', (data) => {
+        console.log(data);
+        // TODO: save messages in room to db
+        socket.broadcast.to(data.roomid).emit('chat-msg', data.msg);
+    });
 });
 
 async function main() {

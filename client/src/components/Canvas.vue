@@ -40,6 +40,7 @@ import { ColorPicker } from 'vue-accessible-color-picker';
   }
 })
 export default class Canvas extends Vue {
+  private roomId = this.$route.query.id;
   private color = new paper.Color(0, 0, 0);
   private fill = false;
   private width = 5;
@@ -61,6 +62,10 @@ export default class Canvas extends Vue {
   } = {};
 
   private selected!: MenuItem;
+
+  created(){
+    console.log("Current room id: "+this.$route.query.id);
+  }
 
   mounted() {
     this.scope = new paper.PaperScope();

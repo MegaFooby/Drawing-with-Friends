@@ -10,7 +10,6 @@ class RoomService {
         user: user.username
       }, {headers: authHeader()})
       .then(response => {
-        console.log("Heyyyyy");
         return response.data;
       });
   }

@@ -28,6 +28,7 @@
     </div>
     <div class="closed" :class="{open}">
       <font-awesome-icon class="chat-handle" icon="grip-lines-vertical"></font-awesome-icon>
+      <font-awesome-icon v-on:click="goToRooms()" icon="arrow-left"></font-awesome-icon>
       <font-awesome-icon v-on:click="open = !open" icon="comments"></font-awesome-icon>
     </div>
   </div>
@@ -63,6 +64,10 @@
 
     mounted() {
       const  x = 0;
+    }
+
+    goToRooms() {
+      this.$router.push('/rooms');
     }
 
     send() {
@@ -154,7 +159,7 @@
     z-index: 10000;
     display: flex;
     height: 2rem;
-    width: 3.5rem;
+    width: 5rem;
     border: 2px solid black;
     border-radius: 1rem;
     font-size: 1rem;
@@ -165,6 +170,9 @@
     top: 0;
     left: 0;
     background-color: $menu-bg;
+  }
+  .closed * {
+    margin: 0px 5px;
   }
   #handle {
     user-select: none;

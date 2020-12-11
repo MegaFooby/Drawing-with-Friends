@@ -7,6 +7,13 @@ const bodyParser = require('body-parser');
 const jwt = require('helpers/jwt');
 const errorHandler = require('helpers/error-handler');
 const app = express();
+const path = require('path');
+const http = require('http').createServer(app);
+const io = require('socket.io')(http, {
+    cors: {
+      origin: '*',
+    }
+  });
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -28,6 +35,22 @@ app.use(errorHandler);
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
     console.log(`listening on ${port}`);
+});
+
+http.listen(3000, () => {
+    console.log('Listening on port *: 3000');
+});
+
+io.on('connection', (socket) => {
+    console.log('Someone connected');
+
+    socket.emit('connected', {message:"hi"});
+
+    socket.on('draw', (data) =>{
+        console.log("Got drawing");
+        console.log(data);
+        io.emit('draw', data);
+    });
 });
 
 async function main() {

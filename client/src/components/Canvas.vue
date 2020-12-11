@@ -19,6 +19,7 @@
   <Chat />
   </div>
 </template>
+<script src="/socket.io/socket.io.js"></script>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
 import paper from "paper";
@@ -29,6 +30,8 @@ import Menu from "@/components/menu/Menu.vue";
 import MenuItem from "@/components/menu/MenuItem.vue";
 import MenuItemGroup from "@/components/menu/MenuItemGroup.vue";
 import { ColorPicker } from 'vue-accessible-color-picker';
+
+var socket = require('socket.io-client')('http://localhost:3000');
 
 @Component({
   components: {
@@ -65,6 +68,21 @@ export default class Canvas extends Vue {
 
   created(){
     console.log("Current room id: "+this.$route.query.id);
+
+    window.onbeforeunload = () => {
+        socket.emit('leave', this.username);
+    }
+
+    socket.on('connected', (data) => {
+        console.log("Server said: "+data.message);
+    });
+
+    socket.on('draw', (data) => {
+      console.log("Got a drawing from server");
+      const p = new paper.Path();
+      p.importJSON(data);
+    });
+
   }
 
   mounted() {
@@ -167,7 +185,7 @@ export default class Canvas extends Vue {
   //run this at every onMouseUp to send this to the server
   send() {
     const json = this.path.exportJSON([true, 5]); //number is float precision
-    //send json to server
+    socket.emit("draw", json);
   }
 
   receive(json: string) {

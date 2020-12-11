@@ -34,9 +34,10 @@ const routes: Array<RouteConfig> = [
     component: RoomMenu,
   },
   {
-    path: "/room/:id",
+    path: "/room/:roomId",
     name: "Canvas",
     component: Canvas,
+    props: true
   },
 ];
 

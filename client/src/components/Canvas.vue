@@ -33,20 +33,18 @@
 <script src="/socket.io/socket.io.js"></script>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
+import { ColorPicker } from "vue-accessible-color-picker";
 import paper from "paper";
 
-import Chat from "@/components/Chat.vue";
+import SocketService from "../services/socket-io.service";
 
-import Menu from "@/components/menu/Menu.vue";
-import MenuItem from "@/components/menu/MenuItem.vue";
-import MenuItemGroup from "@/components/menu/MenuItemGroup.vue";
-import { ColorPicker } from "vue-accessible-color-picker";
+import Chat from "./Chat.vue";
+import Menu from "./menu/Menu.vue";
+import MenuItem from "./menu/MenuItem.vue";
+import MenuItemGroup from "./menu/MenuItemGroup.vue";
 
-var socket = require('socket.io-client')('http://localhost:3000', {
-    cors: {
-      origin: '*',
-    }
-});
+const socket = SocketService.socket;
+
 
 @Component({
   components: {
@@ -250,29 +248,6 @@ export default class Canvas extends Vue {
       roomid: this.$route.query.id
     };
     socket.emit("draw", payload);
-  }
-
-  getTime = () => {
-    const d = new Date();
-    const fixup = (num: number) => num.toString().padStart(2,'0')
-    const hr = (a: number) => a % 12 == 0 ? 12 : a % 12;
-    return `${hr(d.getHours())}:${fixup(d.getMinutes())}${d.getHours() < 12 ? 'a': 'p'}m`;
-  };
-
-  sendMsg(message){
-    console.log("Sending message: "+message);
-    const payload = {
-      roomid: this.$route.query.id,
-      msg: {
-        name: this.$store.state.auth.user.username,
-        from: this.$store.state.auth.user.id,
-        time: this.getTime(),
-        msg: message,
-        colour: "black",         // TODO: colors for users
-        effect: "",
-      }
-    }
-    socket.emit('chat-msg', payload)
   }
 
   setPath(path: paper.Path) {

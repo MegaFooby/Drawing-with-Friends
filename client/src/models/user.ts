@@ -9,4 +9,8 @@ export default class User {
       this.username = username;
       this.password = password;
     }
+
+    name() {
+      return this.firstName + this.lastName;
+    }
   }

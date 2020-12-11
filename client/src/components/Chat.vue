@@ -35,7 +35,9 @@
 </template>
 <script lang="ts">
   import { Component, Prop, Vue } from "vue-property-decorator";
+  import SocketService from '../services/socket-io.service';
   import Emoji from "./helpers/emoji";
+  import { getTime } from '../plugins/time';
 
   interface MessageObj {
     msg?: string;
@@ -49,6 +51,7 @@
   /** A component to make menus have consistant styling and be movable */
   @Component
   export default class Chat extends Vue {
+    [x: string]: any;
     private readonly emoji = new Emoji();
 
     public open = false;
@@ -56,11 +59,6 @@
     private lastMessage: MessageObj = {};
     private currentlyScrolling = false;
     private newMessages = false;
-
-    private user =  {
-      id: "0000-0000-0000-0000",
-      name: "Keenan"
-    }
 
     mounted() {
       const  x = 0;
@@ -74,16 +72,11 @@
       const msgInput = this.$refs.msgInput as HTMLInputElement;
       const msg = msgInput.value;
       if (msg === '') return;
-      this.$parent.sendMsg(msg);
+
+      SocketService.sendMsg(this.$route.query.id, msg);
       msgInput.value = '';
 
-      const getTime = () => {
-        const d = new Date();
-        const fixup = (num: number) => num.toString().padStart(2,'0')
-        const hr = (a: number) => a % 12 == 0 ? 12 : a % 12;
-        return `${hr(d.getHours())}:${fixup(d.getMinutes())}${d.getHours() < 12 ? 'a': 'p'}m`;
-      };
-      const m = {name, from: this.$store.state.auth.user.id, time: getTime(), msg, colour: 'cadetblue', effect: ''};
+      const m = {name: this.$store.state.auth.user.username, from: this.$store.state.auth.user.id, time: getTime(), msg, colour: 'cadetblue', effect: ''};
       this.$emit('message', m);
       this.onMessage(m);
     }
@@ -144,6 +137,7 @@
       msgInput.classList.remove('error');
       msgInput.value = this.emoji.emojify(msgInput.value);
     }
+
     recieve(msg) {
       console.log(msg);
       this.onMessage(msg);

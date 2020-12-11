@@ -9,6 +9,7 @@ const errorHandler = require('helpers/error-handler');
 const app = express();
 const path = require('path');
 const http = require('http').createServer(app);
+
 const io = require('socket.io')(http, {
     cors: {
       origin: '*',
@@ -33,14 +34,10 @@ app.use('/users', require('./users/users.controller'));     // Users api endpoin
 app.use('/rooms', require('./rooms/rooms.controller'));     // Rooms api endpoints
 
 app.use(errorHandler);
- 
-const port = process.env.PORT || 4000;
-app.listen(port, () => {
-    console.log(`listening on ${port}`);
-});
 
-http.listen(3000, () => {
-    console.log('Listening on port *: 3000');
+const port = process.env.PORT || 3000;
+http.listen(port, () => {
+    console.log(`listening on ${port}`);
 });
 
 io.on('connection', (socket) => {

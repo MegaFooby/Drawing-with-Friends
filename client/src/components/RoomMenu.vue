@@ -143,8 +143,12 @@ export default class RoomMenu extends Vue {
   }
 
   logout() {
-    this.$router.push("/logout");
-  }
+      this.$store.dispatch('auth/logout').then(
+       () => {
+              this.$router.push('/login');
+            }
+      )
+    }
 }
 
 interface Room {

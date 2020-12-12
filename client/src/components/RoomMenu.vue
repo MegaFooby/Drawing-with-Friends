@@ -110,7 +110,7 @@ export default class RoomMenu extends Vue {
   }
 
   openRoom(room: Room) {
-    this.$router.push({ path: "/room/" + room.id, query:{id: room.id} });
+    this.$router.push({ path: "/room/" + room.id});
   }
 
   createRoom() {

@@ -58,7 +58,7 @@ const socket = SocketService.socket;
   }
 })
 export default class Canvas extends Vue {
-  private roomId = this.$route.query.id;
+  @Prop() roomId!: string;
   private color = new paper.Color(0, 0, 0);
   private fill = false;
   private width = 5;
@@ -84,7 +84,7 @@ export default class Canvas extends Vue {
   private layers = new Map();
 
   created(){
-    console.log("Current room id: "+this.$route.query.id);
+    console.log("Current room id: "+this.roomId);
 
     socket.on('connected', (data) => {
         console.log("Server said: "+data.message);
@@ -106,7 +106,7 @@ export default class Canvas extends Vue {
       this.layers.get(this.$store.state.auth.user.username).activate();
     });
 
-    socket.emit('connected', this.$route.query.id);
+    socket.emit('connected', this.roomId);
 
     socket.on('draw', (data) => {
       if(!this.layers.has(data.user)) {
@@ -268,7 +268,7 @@ export default class Canvas extends Vue {
     const json = this.path.exportJSON([true, 5]); //number is float precision
     const payload = {
       json: json, 
-      roomid: this.$route.query.id,
+      roomid: this.roomId
       user: this.$store.state.auth.user.username
     };
     socket.emit("draw", payload);

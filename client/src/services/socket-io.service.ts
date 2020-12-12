@@ -5,14 +5,27 @@ import store from '../store';
 const port = process.env.PORT || 3000;
 export const API_URL = `http://localhost:3000/`;
 
+export interface Message {
+  msg: string;
+  effect: string;
+  from: string;
+  name: string;
+  colour: string;
+  time: string;
+}
+
+interface MessagePayload {
+  roomid: string;
+  message: Message;
+}
+
 class SocketIOService {
   readonly socket = io(API_URL);
 
-  sendMsg(roomid: string, message: any){
-    console.log(`Sending message: ${message}`);
-    const payload = {
+  sendMsg(message: any, roomid = "default"): Message {
+    const payload: MessagePayload = {
       roomid,
-      msg: {
+      message: {
         name: store.state.auth.user.username,
         from: store.state.auth.user.id,
         time: getTime(),
@@ -22,6 +35,7 @@ class SocketIOService {
       }
     }
     this.socket.emit('chat-msg', payload)
+    return payload.message;
   }
 }
 

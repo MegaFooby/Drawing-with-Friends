@@ -1,4 +1,5 @@
 require('rootpath')();
+
 const express = require('express');
 const { MongoClient } = require('mongodb');
 const cors = require('cors');
@@ -18,6 +19,7 @@ const io = require('socket.io')(http, {
 const db = require('helpers/db');
 const { emit } = require('process');
 const Drawing = db.Drawing;
+const ChatMessage = db.ChatMessage;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -50,6 +52,7 @@ io.on('connection', (socket) => {
         socket.room = id;
         socket.join(id); 
         const drawing = Drawing.find({roomid: id},(err, drawings) => {socket.emit('drawHistory', drawings);});
+        const chat = ChatMessage.find({roomid: id},(err, messages) => {socket.emit('chatHistory', messages);});
         console.log("Drawings found:"+drawing);
         console.log("Connecting to room " + id);
     });
@@ -71,8 +74,9 @@ io.on('connection', (socket) => {
 
     socket.on('chat-msg', (data) => {
         console.log(data);
-        // TODO: save messages in room to db
-        socket.broadcast.to(data.roomid).emit('chat-msg', data.msg);
+        socket.broadcast.to(data.roomid).emit('chat-msg', data.message);
+        const message = new ChatMessage(data);
+        message.save();
     });
 });
 

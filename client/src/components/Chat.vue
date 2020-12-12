@@ -8,13 +8,7 @@
         <font-awesome-icon class="chat-handle" icon="grip-lines"></font-awesome-icon>
       </div>
       <div class="users"></div>
-      <ul id="messages" ref="msgs">
-        <span class="name" data-from="c3987a84-3acc-445a-95ab-46abf9baf7e0" style="color: rgb(0, 0, 0);">Keenan</span>
-        <li>hey</li><span class="time">7:06pm</span>
-        <li>Whats up</li><span class="time">7:06pm</span>
-        <li class="sent">nm u?</li><span class="time sent">7:06pm</span>
-        <li class="sent emojis">🙂</li><span class="time sent emojis">7:07pm</span>
-      </ul>
+      <ul id="messages" ref="msgs"></ul>
       <div id="new-messages" v-if="newMessages">
         <button id="scroll-to-bottom" @click="scrollToBottom()">
           <i class="fas fa-arrow-down"></i>
@@ -36,17 +30,11 @@
 <script lang="ts">
   import { Component, Prop, Vue } from "vue-property-decorator";
   import SocketService from '../services/socket-io.service';
+  import { Message } from '../services/socket-io.service';
   import Emoji from "./helpers/emoji";
   import { getTime } from '../plugins/time';
 
-  interface MessageObj {
-    msg?: string;
-    effect?: string;
-    from?: string;
-    name?: string;
-    colour?: string;
-    time?: string;
-  }
+  
 
   /** A component to make menus have consistant styling and be movable */
   @Component
@@ -56,12 +44,18 @@
 
     public open = false;
 
-    private lastMessage: MessageObj = {};
+    private lastMessage: Partial<Message> | Message = {};
     private currentlyScrolling = false;
     private newMessages = false;
 
-    mounted() {
-      const  x = 0;
+    created() {
+      SocketService.socket.on('chat-msg', (msg) => this.recieve(msg) );
+
+      SocketService.socket.on('chatHistory', (history) => {
+        for(const message in history){
+          this.recieve(history[message].message);
+        }
+      });
     }
 
     goToRooms() {
@@ -73,10 +67,9 @@
       const msg = msgInput.value;
       if (msg === '') return;
 
-      SocketService.sendMsg(this.$route.query.id, msg);
+      const m = SocketService.sendMsg(msg, this.$route.query.id);
       msgInput.value = '';
 
-      const m = {name: this.$store.state.auth.user.username, from: this.$store.state.auth.user.id, time: getTime(), msg, colour: 'cadetblue', effect: ''};
       this.$emit('message', m);
       this.onMessage(m);
     }
@@ -92,7 +85,7 @@
     }
 
     //input msg object
-    onMessage(obj: Required<MessageObj>) {
+    onMessage(obj: Message) {
       const { effect, from: id, time, msg } = obj;
       const { name, colour } = obj;
       const emojis = this.emoji.only(msg), sent = id === this.$store.state.auth.user.id;

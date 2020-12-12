@@ -1,6 +1,7 @@
 <template>
   <div class="col-md-12">
-    <div class="card card-container">
+    <v-img src="../assets/logo.png" contain max-height="125" ref="logo"></v-img>
+    <div class="card card-container rounded-xl">
       <img
         id="profile-img"
         src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
@@ -13,12 +14,12 @@
             v-model="user.username"
             v-validate="'required'"
             type="text"
-            class="form-control"
+            class="form-control input-border rounded-xl"
             name="username"
           />
           <div
             v-if="errors.has('username')"
-            class="alert alert-danger"
+            class="red--text alert alert-danger"
             role="alert"
           >Username is required!</div>
         </div>
@@ -28,28 +29,32 @@
             v-model="user.password"
             v-validate="'required'"
             type="password"
-            class="form-control"
+            class="form-control input-border rounded-xl"
             name="password"
           />
           <div
             v-if="errors.has('password')"
-            class="alert alert-danger"
+            class="red--text alert alert-danger"
             role="alert"
           >Password is required!</div>
         </div>
-        <div class="form-group">
-          <button class="btn btn-primary btn-block" :disabled="loading">
-            <span v-show="loading" class="spinner-border spinner-border-sm"></span>
-            <span>Login</span>
-          </button>
+        <div class="form-group pt-3">
+          <v-btn 
+            @click="handleLogin"
+            rounded
+            :loading="loading"
+            class="input-border"
+          >Login</v-btn>
         </div>
         <div class="form-group">
-          <div v-if="message" class="alert alert-danger" role="alert">{{message}}</div>
+          <div v-if="message" class="alert alert-danger red--text pt-3" role="alert">{{message.message}}</div>
         </div>
       </form>
-    <button v-on:click="register">
-        <span>Create Account</span>
-    </button>
+      <v-btn 
+        v-on:click="register"
+        rounded
+        class="input-border mt-3"
+      >Create Account</v-btn>
     </div>
   </div>
 </template>
@@ -108,7 +113,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 label {
   display: block;
   margin-top: 10px;
@@ -120,13 +125,11 @@ label {
 }
 
 .card {
-  background-color: #f7f7f7;
+  background-color: #FFFFFF;
+  border: $card-border-style;
   padding: 20px 25px 30px;
   margin: 0 auto 25px;
   margin-top: 50px;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
   -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
   -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
@@ -140,5 +143,12 @@ label {
   -moz-border-radius: 50%;
   -webkit-border-radius: 50%;
   border-radius: 50%;
+}
+
+.input-border {
+  border: $border-style;
+}
+.input-border:focus {
+  outline: none
 }
 </style>

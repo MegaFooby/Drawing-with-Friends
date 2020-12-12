@@ -67,7 +67,7 @@ export default {
     </transition>
   </form>
 </template>
-<style>
+<style scoped>
 input[type="text"],
 textarea {
   background-color: rgb(255, 255, 255);

@@ -1,7 +1,7 @@
 <template>
     <div class="menu-item" v-bind:class="{ active }" @click="onClick()">
       <slot>
-        <font-awesome-icon :icon="icon"></font-awesome-icon>
+        <font-awesome-icon :title="title" :icon="icon"></font-awesome-icon>
       </slot>
     </div>
 </template>

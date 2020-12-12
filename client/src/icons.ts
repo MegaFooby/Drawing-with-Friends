@@ -25,6 +25,8 @@ import {
   faArrowRight,
   faComments,
   faGripLinesVertical,
+  faUndoAlt,
+  faThLarge,
 } from '@fortawesome/free-solid-svg-icons';
 
 export default function () {
@@ -47,6 +49,8 @@ export default function () {
     faArrowLeft,
     faArrowRight,
     faComments,
-    faGripLinesVertical
+    faGripLinesVertical,
+    faUndoAlt,
+    faThLarge,
   );
 }

@@ -17,6 +17,7 @@ const io = require('socket.io')(http, {
     }
 });
 const db = require('helpers/db');
+const { emit } = require('process');
 const Drawing = db.Drawing;
 const ChatMessage = db.ChatMessage;
 
@@ -62,6 +63,13 @@ io.on('connection', (socket) => {
         socket.broadcast.to(data.roomid).emit('draw', data);
         const drawing = new Drawing(data);
         drawing.save();
+    });
+
+    socket.on("undo", (id, name, line) => {
+        io.in(id).emit("undo", name);
+        const drawing = Drawing.findOneAndDelete({ user: name, roomid: id, json: line }, function (err) {
+            if(err) console.log(err);
+        });
     });
 
     socket.on('chat-msg', (data) => {

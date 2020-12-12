@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const schema = new Schema({
     roomid: { type: String, required: true },
+    user: { type: String, required: true },
     json: { type: String, required: true },
     createdDate: { type: Date, default: Date.now }
 });

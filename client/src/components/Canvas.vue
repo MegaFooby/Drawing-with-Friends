@@ -124,11 +124,6 @@ export default class Canvas extends Vue {
         this.layers.get(user).lastChild.remove();
       }
     });
-
-    socket.on('chat-msg', (msg) => {
-      console.log("Got message:"+msg);
-      this.$refs.chat.recieve(msg);
-    });
   }
 
   mounted() {

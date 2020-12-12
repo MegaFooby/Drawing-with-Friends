@@ -14,7 +14,7 @@ module.exports = {
 };
 
 async function getAll({user}) {
-    return await Room.find({"users":{$all :[user]}});
+    return await Room.find({ "users": { $all : [user] }}).or({ "isPrivate": false });
 }
 
 async function getById(id) {

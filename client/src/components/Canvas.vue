@@ -3,16 +3,13 @@
     <canvas id="myCanvas" resize></canvas>
     <Menu tag="nav" class="drawing-palette">
       <menu-item-group title="Tools" icon="pencil-ruler" ref="tools">
-        <menu-item @click="activate(pen, $event)" icon="pen" />
-        <menu-item @click="activate(square, $event)" icon="square" />
-        <menu-item @click="activate(circle, $event)" icon="circle" />
+        <menu-item title="Pen Tool" @click="activate(pen, $event)" icon="pen" />
+        <menu-item title="Square Tool" @click="activate(square, $event)" icon="square" />
+        <menu-item title="Circle Tool" @click="activate(circle, $event)" icon="circle" />
       </menu-item-group>
-      <menu-item :active="fill" @click="fill = !fill" icon="fill-drip" />
-      <menu-item
-        :active="active(move)"
-        @click="activate(move, $event)"
-        icon="arrows-alt"
-      />
+      <menu-item :title="`${fill ? 'Disable':'Enable'} Fill Mode`" :active="fill" @click="fill = !fill" icon="fill-drip" />
+      <menu-item title="Move Your View" :active="active(move)" @click="activate(move, $event)" icon="arrows-alt" />
+      <menu-item title="Undo" @click="undo()" icon="undo-alt" />
       <menu-item-group
         icon="palette"
         :groupClass="{ 'color-picker-group': true }"
@@ -42,6 +39,7 @@ import Chat from "./Chat.vue";
 import Menu from "./menu/Menu.vue";
 import MenuItem from "./menu/MenuItem.vue";
 import MenuItemGroup from "./menu/MenuItemGroup.vue";
+import { Layer } from "paper/dist/paper-core";
 
 const socket = SocketService.socket;
 
@@ -56,7 +54,7 @@ const socket = SocketService.socket;
   }
 })
 export default class Canvas extends Vue {
-  @Prop() roomId!: string;
+  @Prop({default: 'default'}) roomId!: string;
   private color = new paper.Color(0, 0, 0);
   private fill = false;
   private width = 5;
@@ -79,6 +77,8 @@ export default class Canvas extends Vue {
 
   private selected!: MenuItem;
 
+  private layers = new Map();
+
   created(){
     console.log("Current room id: "+this.roomId);
 
@@ -87,32 +87,46 @@ export default class Canvas extends Vue {
     });
 
     socket.on('drawHistory', (history) => {                 // import canvas from server's database
-        console.log("Recieving drawing database history");
-        console.log(history);
-        var drawing;
-        for(drawing in history){
-          const p = new paper.Path();
-          p.importJSON(history[drawing].json);
+      console.log("Recieving drawing database history");
+      console.log(history);
+      var drawing;
+      for(drawing in history){
+        if(!this.layers.has(history[drawing].user)) {
+          this.layers.set(history[drawing].user, new paper.Layer());
+          this.scope.project.addLayer(this.layers.get(history[drawing].user));
         }
+        this.layers.get(history[drawing].user).activate();
+        const p = new paper.Path();
+        p.importJSON(history[drawing].json);
+      }
+      this.layers.get(this.$store.state.auth.user.username).activate();
     });
 
     socket.emit('connected', this.roomId);
 
     socket.on('draw', (data) => {
+      if(!this.layers.has(data.user)) {
+        this.layers.set(data.user, new paper.Layer());
+      }
+      this.layers.get(data.user).activate();
       console.log("Got a drawing from server");
       const p = new paper.Path();
       p.importJSON(data.json);
+      this.layers.get(this.$store.state.auth.user.username).activate();
     });
 
-    socket.on('chat-msg', (msg) => {
-      console.log("Got message:"+msg);
-      this.$refs.chat.recieve(msg);
-    })
+    socket.on('undo', (user) => {
+      if(this.layers.get(user).hasChildren()) {
+        this.layers.get(user).lastChild.remove();
+      }
+    });
   }
 
   mounted() {
     this.scope = new paper.PaperScope();
     this.scope.setup("myCanvas");
+    this.layers.set(this.$store.state.auth.user.username, new paper.Layer());
+    this.scope.project.addLayer(this.layers.get(this.$store.state.auth.user.username));
 
     this.pen = new paper.Tool();
 
@@ -245,9 +259,14 @@ export default class Canvas extends Vue {
     const json = this.path.exportJSON([true, 5]); //number is float precision
     const payload = {
       json: json, 
-      roomid: this.roomId
+      roomid: this.roomId,
+      user: this.$store.state.auth.user.username
     };
     socket.emit("draw", payload);
+  }
+
+  undo() {
+    socket.emit("undo", this.$route.query.id, this.$store.state.auth.user.username, this.layers.get(this.$store.state.auth.user.username).lastChild.exportJSON());
   }
 
   setPath(path: paper.Path) {

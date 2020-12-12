@@ -14,7 +14,7 @@ module.exports = router;
 
 function create(req, res, next) {
     roomService.create(req.body)
-        .then(() => res.json({}))
+        .then((room) => res.json(room))
         .catch(err => next(err));
 }
 

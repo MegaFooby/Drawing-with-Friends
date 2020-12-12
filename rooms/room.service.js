@@ -28,7 +28,7 @@ async function create(RoomParam) {
     }
     const room = new Room(RoomParam);
     console.log("Made room");
-    await room.save();
+    return await room.save();
 }
 
 async function join({roomname, username}) {

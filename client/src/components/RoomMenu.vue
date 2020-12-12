@@ -51,6 +51,7 @@
         >Logout</v-btn
       >
     </div>
+    <router-view></router-view>
   </div>
 </template>
 <script lang="ts">
@@ -114,7 +115,7 @@ export default class RoomMenu extends Vue {
   }
 
   createRoom() {
-    console.log("todo");
+    this.$router.push({ path: "/rooms/create"});
   }
 
   logout() {

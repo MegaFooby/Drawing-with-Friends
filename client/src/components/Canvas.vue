@@ -6,6 +6,7 @@
         <menu-item title="Pen Tool" @click="activate(pen, $event)" icon="pen" />
         <menu-item title="Square Tool" @click="activate(square, $event)" icon="square" />
         <menu-item title="Circle Tool" @click="activate(circle, $event)" icon="circle" />
+        <menu-item title="Erase Tool" @click="activate(eraser, $event)" icon="" />
       </menu-item-group>
       <menu-item :title="`${fill ? 'Disable':'Enable'} Fill Mode`" :active="fill" @click="fill = !fill" icon="fill-drip" />
       <menu-item title="Move Your View" :active="active(move)" @click="activate(move, $event)" icon="arrows-alt" />
@@ -65,6 +66,7 @@ export default class Canvas extends Vue {
   private pen = new paper.Tool();
   private square = new paper.Tool();
   private circle = new paper.Tool();
+  private eraser = new paper.Tool();
 
   private captureMove = false;
   private showColours = true;
@@ -96,8 +98,16 @@ export default class Canvas extends Vue {
           this.scope.project.addLayer(this.layers.get(history[drawing].user));
         }
         this.layers.get(history[drawing].user).activate();
-        const p = new paper.Path();
-        p.importJSON(history[drawing].json);
+        if(history[drawing].erase) {
+          let i, line;
+          let arr = JSON.parse(history[drawing].json);
+          for(i = 0; i < arr.length; i++) {
+            this.scope.project.activeLayer.children[arr[i]].opacity = 0;
+          }
+        } else {
+          const p = new paper.Path();
+          p.importJSON(history[drawing].json);
+        }
       }
       this.layers.get(this.$store.state.auth.user.username).activate();
     });
@@ -120,6 +130,29 @@ export default class Canvas extends Vue {
         this.layers.get(user).lastChild.remove();
       }
     });
+
+    socket.on("erase", (data) => {
+      this.layers.get(data.user).activate();
+      let i, line;
+      let arr = JSON.parse(data.json);
+      for(i = 0; i < arr.length; i++) {
+        this.scope.project.activeLayer.children[arr[i]].opacity = 0;
+      }
+    });
+
+    socket.on('undo erase', (data) => {
+      this.layers.get(data.user).activate();
+      let i, line;
+      let arr = JSON.parse(data.json);
+      for(i = 0; i < arr.length; i++) {
+        this.scope.project.activeLayer.children[arr[i]].opacity = 1;
+      }
+    });
+
+    socket.on('chat-msg', (msg) => {
+      console.log("Got message:"+msg);
+      this.$refs.chat.recieve(msg);
+    });
   }
 
   mounted() {
@@ -131,6 +164,7 @@ export default class Canvas extends Vue {
     this.pen = new paper.Tool();
 
     this.pen.onMouseDown = (event: paper.ToolEvent) => {
+      this.layers.get(this.$store.state.auth.user.username).activate();
       this.path = new paper.Path();
       this.path.strokeColor = this.color;
       this.setPath(this.path);
@@ -148,6 +182,7 @@ export default class Canvas extends Vue {
     this.square.minDistance = 2;
     let startPoint: paper.Point;
     this.square.onMouseDown = (event: paper.ToolEvent) => {
+      this.layers.get(this.$store.state.auth.user.username).activate();
       this.path = new paper.Path.Rectangle(event.point, new paper.Size(1, 1));
       this.setPath(this.path);
       startPoint = event.point;
@@ -184,6 +219,7 @@ export default class Canvas extends Vue {
     this.circle = new paper.Tool();
     this.circle.minDistance = 2;
     this.circle.onMouseDown = (event: paper.ToolEvent) => {
+      this.layers.get(this.$store.state.auth.user.username).activate();
       this.path = new paper.Path.Ellipse(
         new paper.Rectangle(event.point, new paper.Size(1, 1))
       );
@@ -244,6 +280,41 @@ export default class Canvas extends Vue {
           new paper.Point(dx, dy)
         );
     };
+
+
+    this.eraser = new paper.Tool();
+    this.eraser.onMouseDown = (event: paper.ToolEvent) => {
+      this.layers.get(this.$store.state.auth.user.username).activate();
+      this.path = new paper.Path();
+      this.path.strokeColor = this.color;
+      this.setPath(this.path);
+      this.path.add(event.point);
+    };
+
+    this.eraser.onMouseDrag = (event: paper.ToolEvent) => {
+      this.path.add(event.point);
+    };
+
+    this.eraser.onMouseUp = (event: paper.ToolEvent) => {
+      this.layers.get(this.$store.state.auth.user.username).activate();
+      let i, line;
+      let arr = [];
+      for(i = 0; i < this.scope.project.activeLayer.children.length; i++) {
+        line = this.scope.project.activeLayer.children[i];
+        if(line.className == 'Path' && this.path.getIntersections(line).length != 0) {
+          arr.push(i);
+          line.opacity = 0;
+        }
+      }
+      const payload = {
+        json: JSON.stringify(arr), 
+        roomid: this.roomId,
+        user: this.$store.state.auth.user.username,
+        erase: true
+      };
+      socket.emit("erase", payload);
+      this.path.remove();
+    };
   }
 
   updateColor(eventData: ColorPicker.colors) {
@@ -260,13 +331,14 @@ export default class Canvas extends Vue {
     const payload = {
       json: json, 
       roomid: this.roomId,
-      user: this.$store.state.auth.user.username
+      user: this.$store.state.auth.user.username,
+      erase: false
     };
     socket.emit("draw", payload);
   }
 
   undo() {
-    socket.emit("undo", this.$route.query.id, this.$store.state.auth.user.username, this.layers.get(this.$store.state.auth.user.username).lastChild.exportJSON());
+    socket.emit("undo", this.roomId, this.$store.state.auth.user.username, this.layers.get(this.$store.state.auth.user.username).lastChild.exportJSON());
   }
 
   setPath(path: paper.Path) {

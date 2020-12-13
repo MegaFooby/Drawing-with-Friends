@@ -1,15 +1,33 @@
 <script>
+//import User from "../models/user";
 export default {
   name: "modal",
+  data() {
+    return {
+      newUN: "",
+      newPW: ""
+    };
+  },
   methods: {
     close() {
       this.$emit("close");
+    },
+    processForm() {
+      console.log({ newUN: this.newUN, newPW: this.newPW });
+    },
+
+    loggedIn() {
+      return this.$store.state.auth.status.loggedIn;
+    },
+
+    getUser() {
+      return this.$store.state.auth.user;
     }
   }
 };
 </script>
 <template>
-  <form METHOD="POST" ACTION="http://jkorpela.fi/cgi-bin/echo.cgi">
+  <form id="settings-form" @submit.prevent="processForm">
     <transition name="modal-fade">
       <div class="modal-backdrop">
         <div
@@ -35,19 +53,23 @@ export default {
               <input
                 type="text"
                 class="input"
-                id="newUN"
+                v-model="newUN"
                 name="newUN"
-                value=""
               /><br />
               <label for="newPW">Change Password:</label><br />
-              <input type="text" id="newPW" name="newPW" value="" /><br />
+              <input
+                type="text"
+                class="input"
+                v-model="newPW"
+                name="newPW"
+              /><br /><!--
               <label for="newColor">Change Colour (Hex):</label><br />
               <input
                 type="text"
                 id="newColor"
                 name="newColor"
                 value=""
-              /><br /><br />
+              /><br /><br />-->
             </slot>
           </section>
           <footer class="modal-footer">

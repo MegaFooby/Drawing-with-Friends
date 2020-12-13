@@ -38,10 +38,12 @@
           <v-btn
             rounded
             @click="cancel"
+            class="menu-button"
           >Cancel</v-btn>
           <v-btn
             rounded
             @click="createRoom"
+            class="menu-button"
           >Create</v-btn>
         </v-card-actions>
       </v-card>
@@ -99,5 +101,8 @@ export default class CreateRoom extends Vue {
   }
   .theme--light.v-sheet {
     border-color: unset;
+  }
+  .menu-button{
+    border: $border-style;
   }
 </style>

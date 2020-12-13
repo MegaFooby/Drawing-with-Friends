@@ -1,6 +1,7 @@
 import axios from 'axios';
 import authHeader from './auth-header';
 import { API_URL } from './socket-io.service';
+import { Room } from '../models/room';
 
 class RoomService {
   getall(user:any) {
@@ -21,6 +22,13 @@ class RoomService {
         users:users,
         creatorUsername: username
       }, {headers: authHeader()})
+      .then(response => {
+        return response.data
+      });
+  }
+  delete(room: Room) {
+    return axios
+      .delete(API_URL + 'rooms/' + room.id, {headers: authHeader()})
       .then(response => {
         return response.data
       });

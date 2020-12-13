@@ -17,10 +17,13 @@
             elevation="4"
             @click="openRoom(room)"
           >
-            <v-card-title>
-              <v-icon large left :color="room.isPrivate ? '' : 'white'"
+            <v-card-title class="justify-space-between">
+              <v-icon :color="room.isPrivate ? '' : 'white'"
                 >mdi-lock</v-icon
               >
+              <v-icon v-if="isCreator(room)" @click.stop="promptDelete(room)">
+                mdi-delete
+              </v-icon>
             </v-card-title>
             <v-card-text v-text="room.name" class="text-h5"></v-card-text>
             <v-card-text class="text-h6">Creator: {{room.creatorUsername}}</v-card-text>
@@ -52,19 +55,28 @@
       >
     </div>
     <router-view></router-view>
+    <delete-prompt
+      :dialog="deleteDialog"
+      :room="deleteRoom"
+      @close="closeDialog"
+    />
   </div>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import modal from "../components/SettingsModal.vue";
+import DeletePrompt from "./DeletePrompt.vue";
+import { Room } from "../models/room";
 
 @Component({
   components: {
-    modal
+    modal,
+    DeletePrompt
   }
 })
 export default class RoomMenu extends Vue {
-  private rooms: Room[] = [];
+  private deleteDialog = false;
+  private deleteRoom: Room = null;
 
   roomsHeight = 0;
 
@@ -101,19 +113,12 @@ export default class RoomMenu extends Vue {
   getRooms() {
     //TODO get rooms from backend
     if(this.loggedIn()){
-      this.$store.dispatch('room/getall', this.getUser()).then(
-          response => {
-            this.rooms = response;
-          },
-          error => {
-            const message =
-            (error.response && error.response.data) ||
-            error.message ||
-            error.toString();
-            console.log(message);
-          }
-      );
+      this.$store.dispatch('room/getall', this.getUser());
     }
+  }
+
+  get rooms() {
+    return this.$store.state.room.rooms;
   }
 
   openRoom(room: Room) {
@@ -138,13 +143,19 @@ export default class RoomMenu extends Vue {
   closeModal() {
     this.isModalVisible = false;
   }
-}
 
-interface Room {
-  id: string;
-  name: string;
-  isPrivate: boolean;
-  creatorUsername: string;
+  isCreator(room: Room) {
+    return room.creatorUsername === this.getUser().username;
+  }
+
+  promptDelete(room: Room) {
+    this.deleteRoom = room;
+    this.deleteDialog = true;
+  }
+
+  closeDialog(){
+    this.deleteDialog = false;
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -169,5 +180,9 @@ interface Room {
   z-index: 10000;
   top: 0;
   left: 0;
+}
+
+button {
+  padding: unset;
 }
 </style>

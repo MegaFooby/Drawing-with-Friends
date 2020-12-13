@@ -5,6 +5,7 @@ import Login from '../views/Login.vue';
 import Register from '../views/Register.vue';
 import RoomMenu from "../components/RoomMenu.vue";
 import Canvas from "../components/Canvas.vue";
+import CreateRoom from "../components/CreateRoom.vue";
 
 Vue.use(VueRouter);
 
@@ -32,6 +33,12 @@ const routes: Array<RouteConfig> = [
     path: "/rooms",
     name: "Rooms",
     component: RoomMenu,
+    children: [
+      {
+        path: 'create',
+        component: CreateRoom
+      }
+    ]
   },
   {
     path: "/room/:roomId",

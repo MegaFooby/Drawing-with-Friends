@@ -1,5 +1,7 @@
 <template>
   <div class="d-flex flex-column view" ref="window">
+    <button type="button" class="btn" @click="showModal">Settings</button>
+    <modal v-show="isModalVisible" @close="closeModal" />
     <v-img src="../assets/logo.png" contain max-height="125" ref="logo"></v-img>
     <v-container
       fluid
@@ -10,14 +12,13 @@
       <v-row>
         <v-col v-for="room in rooms" :key="room.id" :cols="3">
           <v-card
-            class="rounded-xl"
-            color="primary"
+            class="rounded-xl room-card"
             height="200px"
             elevation="4"
             @click="openRoom(room)"
           >
             <v-card-title>
-              <v-icon large left :color="room.isPrivate ? '' : 'primary'"
+              <v-icon large left :color="room.isPrivate ? '' : 'white'"
                 >mdi-lock</v-icon
               >
             </v-card-title>
@@ -28,8 +29,7 @@
 
         <v-col :cols="3">
           <v-card
-            class="rounded-xl align-center justify-center flex-column d-flex"
-            color="primary"
+            class="rounded-xl align-center justify-center flex-column d-flex room-card"
             height="200px"
             elevation="4"
             @click="createRoom"
@@ -44,24 +44,31 @@
       </v-row>
     </v-container>
     <div class="d-flex justify-space-between pa-3 mt-auto" ref="otherButtons">
-      <v-btn color="primary" rounded class="black--text">
+      <v-btn rounded class="black--text menu-button">
         Have an invite code?
       </v-btn>
-      <v-btn color="primary" rounded class="black--text" @click="logout"
+      <v-btn rounded class="black--text menu-button" @click="logout"
         >Logout</v-btn
       >
     </div>
+    <router-view></router-view>
   </div>
 </template>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import modal from "../components/SettingsModal.vue";
 
-@Component
+@Component({
+  components: {
+    modal
+  }
+})
 export default class RoomMenu extends Vue {
   private rooms: Room[] = [];
 
   roomsHeight = 0;
 
+  isModalVisible = false;
   created() {
     this.getRooms();
     window.addEventListener("resize", this.updateRoomsHeight);
@@ -114,7 +121,7 @@ export default class RoomMenu extends Vue {
   }
 
   createRoom() {
-    console.log("todo");
+    this.$router.push({ path: "/rooms/create"});
   }
 
   logout() {
@@ -123,7 +130,14 @@ export default class RoomMenu extends Vue {
               this.$router.push('/login');
             }
       )
-    }
+  }
+  showModal() {
+    this.isModalVisible = true;
+  }
+
+  closeModal() {
+    this.isModalVisible = false;
+  }
 }
 
 interface Room {
@@ -133,12 +147,27 @@ interface Room {
   creatorUsername: string;
 }
 </script>
-<style lang="css" scoped>
+<style lang="scss" scoped>
 .view {
   height: 100%;
 }
 .rooms {
   overflow-y: auto;
   height: 100%;
+}
+  .room-card {
+    border: $card-border-style;
+  }
+  .menu-button{
+    border: $border-style;
+  }
+  .theme--light.v-sheet {
+    border-color: unset;
+  }
+.btn {
+  position: absolute;
+  z-index: 10000;
+  top: 0;
+  left: 0;
 }
 </style>

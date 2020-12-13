@@ -22,9 +22,12 @@
     </div>
     <div class="closed" :class="{open}">
       <font-awesome-icon class="chat-handle" icon="grip-lines-vertical"></font-awesome-icon>
-      <font-awesome-icon v-on:click="goToRooms()" icon="arrow-left"></font-awesome-icon>
-      <font-awesome-icon v-on:click="open = !open" icon="comments"></font-awesome-icon>
+      <font-awesome-icon title="Settings" v-on:click="showModal()" icon="circle"></font-awesome-icon> <!-- tried to use "cogs", not sure why it isn't found -->
+      <font-awesome-icon title="Browse Rooms" v-on:click="goToRooms()" icon="th-large"></font-awesome-icon>
+      <font-awesome-icon title="Show Chat" v-on:click="open = !open" icon="comments"></font-awesome-icon>
+           
     </div>
+      <modal v-show="isModalVisible" @close="closeModal" />
   </div>
 </template>
 <script lang="ts">
@@ -33,11 +36,16 @@
   import { Message } from '../services/socket-io.service';
   import Emoji from "./helpers/emoji";
   import { getTime } from '../plugins/time';
-
+  import modal from "../components/SettingsModal.vue";
   
 
+
   /** A component to make menus have consistant styling and be movable */
-  @Component
+  @Component({
+  components: {
+    modal
+  }
+  })
   export default class Chat extends Vue {
     [x: string]: any;
     private readonly emoji = new Emoji();
@@ -47,7 +55,7 @@
     private lastMessage: Partial<Message> | Message = {};
     private currentlyScrolling = false;
     private newMessages = false;
-
+    private isModalVisible = false;
     created() {
       SocketService.socket.on('chat-msg', (msg) => this.recieve(msg) );
 
@@ -136,6 +144,14 @@
       this.onMessage(msg);
     }
 
+    showModal() {
+    this.isModalVisible = true;
+    }
+
+    closeModal() {
+      this.isModalVisible = false;
+    }
+
   }
 
 </script>
@@ -149,7 +165,7 @@
     z-index: 10000;
     display: flex;
     height: 2rem;
-    width: 5rem;
+    width: 7rem;
     border: 2px solid black;
     border-radius: 1rem;
     font-size: 1rem;

@@ -14,7 +14,7 @@ module.exports = {
 };
 
 async function getAll({user}) {
-    return await Room.find({"users":{$all :[user]}});
+    return await Room.find({ "users": { $all : [user] }}).or({ "isPrivate": false });
 }
 
 async function getById(id) {
@@ -28,7 +28,7 @@ async function create(RoomParam) {
     }
     const room = new Room(RoomParam);
     console.log("Made room");
-    await room.save();
+    return await room.save();
 }
 
 async function join({roomname, username}) {

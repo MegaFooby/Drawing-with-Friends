@@ -71,7 +71,6 @@ io.on('connection', (socket) => {
                 Drawing.findOneAndDelete({ _id: result[result.length-1]._id }, function (err) {
                     if(err) console.log(err);
                 });
-                console.log(result[result.length-1].erase);
                 if(result[result.length-1].erase) {
                     io.in(id).emit("undo erase", result[result.length-1]);
                 } else {

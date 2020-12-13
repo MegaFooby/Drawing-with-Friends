@@ -3,18 +3,14 @@
     <canvas id="myCanvas" resize></canvas>
     <Menu tag="nav" class="drawing-palette">
       <menu-item-group title="Tools" icon="pencil-ruler" ref="tools">
-        <menu-item @click="activate(pen, $event)" icon="pen" />
-        <menu-item @click="activate(square, $event)" icon="square" />
-        <menu-item @click="activate(circle, $event)" icon="circle" />
-        <menu-item @click="activate(eraser, $event)" icon="" />
+        <menu-item title="Pen Tool" @click="activate(pen, $event)" icon="pen" />
+        <menu-item title="Square Tool" @click="activate(square, $event)" icon="square" />
+        <menu-item title="Circle Tool" @click="activate(circle, $event)" icon="circle" />
+        <menu-item title="Erase Tool" @click="activate(eraser, $event)" icon="" />
       </menu-item-group>
-      <menu-item @click="undo()" icon="" />
-      <menu-item :active="fill" @click="fill = !fill" icon="fill-drip" />
-      <menu-item
-        :active="active(move)"
-        @click="activate(move, $event)"
-        icon="arrows-alt"
-      />
+      <menu-item :title="`${fill ? 'Disable':'Enable'} Fill Mode`" :active="fill" @click="fill = !fill" icon="fill-drip" />
+      <menu-item title="Move Your View" :active="active(move)" @click="activate(move, $event)" icon="arrows-alt" />
+      <menu-item title="Undo" @click="undo()" icon="undo-alt" />
       <menu-item-group
         icon="palette"
         :groupClass="{ 'color-picker-group': true }"
@@ -59,7 +55,7 @@ const socket = SocketService.socket;
   }
 })
 export default class Canvas extends Vue {
-  @Prop() roomId!: string;
+  @Prop({default: 'default'}) roomId!: string;
   private color = new paper.Color(0, 0, 0);
   private fill = false;
   private width = 5;

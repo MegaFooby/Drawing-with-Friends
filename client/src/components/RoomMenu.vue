@@ -10,7 +10,7 @@
       :style="{ 'max-height': roomsHeight + 'px' }"
     >
       <v-row>
-        <v-col v-for="room in rooms" :key="room.id" :cols="3">
+        <v-col v-for="room in rooms" :key="room.id" :cols="cardColumns">
           <v-card
             class="rounded-xl room-card"
             height="200px"
@@ -30,7 +30,7 @@
           </v-card>
         </v-col>
 
-        <v-col :cols="3">
+        <v-col :cols="cardColumns">
           <v-card
             class="rounded-xl align-center justify-center flex-column d-flex room-card"
             height="200px"
@@ -155,6 +155,10 @@ export default class RoomMenu extends Vue {
 
   closeDialog(){
     this.deleteDialog = false;
+  }
+
+  get cardColumns() {
+    return this.$vuetify.breakpoint.mobile?12:3;
   }
 }
 </script>

@@ -17,7 +17,7 @@
       >
         <div class="color-picker">
           <color-picker
-            :visible-formats="['hex']"
+            :visible-formats="['rgb']"
             :color="color.toCSS()"
             @color-change="updateColor"
             copy-button="copy"
@@ -56,7 +56,7 @@ const socket = SocketService.socket;
 })
 export default class Canvas extends Vue {
   @Prop({default: 'default'}) roomId!: string;
-  private color = new paper.Color(0, 0, 0);
+  private color = new paper.Color(0, 0, 0, 255);
   private fill = false;
   private width = 5;
 
@@ -321,7 +321,8 @@ export default class Canvas extends Vue {
     this.color = new paper.Color(
       eventData.colors.rgb.r,
       eventData.colors.rgb.g,
-      eventData.colors.rgb.b
+      eventData.colors.rgb.b,
+      eventData.colors.rgb.a
     );
   }
 

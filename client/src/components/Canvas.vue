@@ -1,15 +1,19 @@
 <template>
   <div @mousemove="mouseMove($event)">
-    <canvas id="myCanvas" resize></canvas>
+    <canvas 
+      id="myCanvas" 
+      resize
+      :class="[seletedCursor]"
+    ></canvas>
     <Menu tag="nav" class="drawing-palette">
       <menu-item-group title="Tools" icon="pencil-ruler" ref="tools">
-        <menu-item title="Pen Tool" @click="activate(pen, $event)" icon="pen" />
-        <menu-item title="Square Tool" @click="activate(square, $event)" icon="square" />
-        <menu-item title="Circle Tool" @click="activate(circle, $event)" icon="circle" />
-        <menu-item title="Erase Tool" @click="activate(eraser, $event)" icon="" />
+        <menu-item title="Pen Tool" @click="activate(pen, 'pen', $event)" icon="pen" />
+        <menu-item title="Square Tool" @click="activate(square, 'square', $event)" icon="square" />
+        <menu-item title="Circle Tool" @click="activate(circle, 'circle', $event)" icon="circle" />
+        <menu-item title="Erase Tool" @click="activate(eraser, 'eraser', $event)" icon="" />
       </menu-item-group>
       <menu-item :title="`${fill ? 'Disable':'Enable'} Fill Mode`" :active="fill" @click="fill = !fill" icon="fill-drip" />
-      <menu-item title="Move Your View" :active="active(move)" @click="activate(move, $event)" icon="arrows-alt" />
+      <menu-item title="Move Your View" :active="active(move)" @click="activate(move, 'move', $event)" icon="arrows-alt" />
       <menu-item title="Undo" @click="undo()" icon="undo-alt" />
       <menu-item-group
         icon="palette"
@@ -80,6 +84,16 @@ export default class Canvas extends Vue {
   private selected!: MenuItem;
 
   private layers = new Map();
+
+  private cursors = {
+    pen: "pencil-cursor",
+    square: "cross-cursor",
+    circle: "cross-cursor",
+    eraser: "eraser-cursor",
+    move: "grab-cursor"
+  }
+
+  private seletedCursor = "";
 
   created(){
     console.log("Current room id: "+this.roomId);
@@ -349,8 +363,9 @@ export default class Canvas extends Vue {
     if (this.fill) path.fillColor = this.color;
   }
 
-  activate(tool: paper.Tool, $e: MenuItem) {
+  activate(tool: paper.Tool, toolName: string, $e: MenuItem) {
     if (tool) tool.activate();
+    this.seletedCursor  = this.cursors[toolName];
     this.selected = $e;
   }
 
@@ -399,5 +414,25 @@ a {
       border-radius: 0.75rem;
     }
   }
+}
+
+.cross-cursor {
+  cursor: crosshair;
+}
+
+.pencil-cursor {
+  cursor: url('../assets/iconmonstr-pencil-4.svg') 0 24, pointer;
+}
+
+.eraser-cursor {
+  cursor: url('../assets/eraser.svg') 0 24, pointer;
+}
+
+.grab-cursor {
+  cursor: grab;
+}
+
+.grabbing-cursor {
+  cursor: grabbing;
 }
 </style>

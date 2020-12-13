@@ -66,10 +66,25 @@ io.on('connection', (socket) => {
     });
 
     socket.on("undo", (id, name, line) => {
-        io.in(id).emit("undo", name);
-        const drawing = Drawing.findOneAndDelete({ user: name, roomid: id, json: line }, function (err) {
-            if(err) console.log(err);
-        });
+        Drawing.find({ user: name, roomid: id },
+            (err, result) => {
+                Drawing.findOneAndDelete({ _id: result[result.length-1]._id }, function (err) {
+                    if(err) console.log(err);
+                });
+                console.log(result[result.length-1].erase);
+                if(result[result.length-1].erase) {
+                    io.in(id).emit("undo erase", result[result.length-1]);
+                } else {
+                    io.in(id).emit("undo", name);
+                }
+            }
+        );
+    });
+
+    socket.on("erase", (data) => {
+        socket.broadcast.to(data.roomid).emit('erase', data);
+        const drawing = new Drawing(data);
+        drawing.save();
     });
 
     socket.on('chat-msg', (data) => {

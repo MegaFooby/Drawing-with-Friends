@@ -5,6 +5,7 @@ const schema = new Schema({
     roomid: { type: String, required: true },
     user: { type: String, required: true },
     json: { type: String, required: true },
+    erase: { type: Boolean, required: false},
     createdDate: { type: Date, default: Date.now }
 });
 

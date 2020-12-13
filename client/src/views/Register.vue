@@ -1,6 +1,7 @@
 <template>
   <div class="col-md-12">
-    <div class="card card-container">
+    <v-img src="../assets/logo.png" contain max-height="125" ref="logo"></v-img>
+    <div class="card card-container rounded-xl">
       <img
         id="profile-img"
         src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
@@ -14,12 +15,12 @@
               v-model="user.firstName"
               v-validate="'required|min:3|max:20'"
               type="text"
-              class="form-control"
+              class="form-control input-border rounded-xl"
               name="firstname"
             />
             <div
               v-if="submitted && errors.has('firstname')"
-              class="alert-danger"
+              class="red--text alert-danger"
             >{{errors.first('firstname')}}</div>
           </div>
 
@@ -29,12 +30,12 @@
               v-model="user.lastName"
               v-validate="'required|min:3|max:20'"
               type="text"
-              class="form-control"
+              class="form-control input-border rounded-xl"
               name="lastname"
             />
             <div
               v-if="submitted && errors.has('lastname')"
-              class="alert-danger"
+              class="red--text alert-danger"
             >{{errors.first('lastname')}}</div>
           </div>
           
@@ -44,12 +45,12 @@
               v-model="user.username"
               v-validate="'required|min:3|max:20'"
               type="text"
-              class="form-control"
+              class="form-control input-border rounded-xl"
               name="username"
             />
             <div
               v-if="submitted && errors.has('username')"
-              class="alert-danger"
+              class="red--text alert-danger"
             >{{errors.first('username')}}</div>
           </div>
           <div class="form-group">
@@ -58,25 +59,28 @@
               v-model="user.password"
               v-validate="'required|min:6|max:40'"
               type="password"
-              class="form-control"
+              class="form-control input-border rounded-xl"
               name="password"
             />
             <div
               v-if="submitted && errors.has('password')"
-              class="alert-danger"
+              class="red--text alert-danger"
             >{{errors.first('password')}}</div>
           </div>
           <div class="form-group">
-            <button class="btn btn-primary btn-block">Sign Up</button>
+            <v-btn
+              v-on:click="handleRegister" 
+              class="input-border rounded-xl btn mt-3"
+            >Sign Up</v-btn>
           </div>
         </div>
       </form>
 
       <div
         v-if="message"
-        class="alert"
+        class="alert red--text"
         :class="successful ? 'alert-success' : 'alert-danger'"
-      >{{message}}</div>
+      >{{message.message}}</div>
     </div>
   </div>
 </template>
@@ -131,7 +135,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 label {
   display: block;
   margin-top: 10px;
@@ -143,13 +147,11 @@ label {
 }
 
 .card {
-  background-color: #f7f7f7;
+  background-color: #FFFFFF;
+  border: $card-border-style;
   padding: 20px 25px 30px;
   margin: 0 auto 25px;
   margin-top: 50px;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  border-radius: 2px;
   -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
   -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
@@ -163,5 +165,12 @@ label {
   -moz-border-radius: 50%;
   -webkit-border-radius: 50%;
   border-radius: 50%;
+}
+
+.input-border {
+  border: $border-style;
+}
+.input-border:focus {
+  outline: none
 }
 </style>

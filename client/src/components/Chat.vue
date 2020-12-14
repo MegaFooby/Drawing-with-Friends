@@ -27,8 +27,8 @@
       <font-awesome-icon title="Show Chat" v-on:click="open = !open" icon="comments"></font-awesome-icon>
       <font-awesome-icon title="Invite User" v-on:click.stop="showInviteDialog()" icon="user-plus"></font-awesome-icon>
     </div>
-      <modal v-show="isModalVisible" @close="closeModal" />
-      <invite-code :roomId="roomId" :dialog="inviteDialog" @close="closeInviteDialog()"/>
+      <modal v-show="isModalVisible" @close="closeModal" :currentRoom="$route.params.roomId"/>
+      <invite-code :roomId="$route.params.roomId" :dialog="inviteDialog" @close="closeInviteDialog()"/>      
   </div>
 </template>
 <script lang="ts">
@@ -39,6 +39,7 @@
   import { getTime } from '../plugins/time';
   import modal from "../components/SettingsModal.vue";
   import InviteCode from "./InviteCode.vue";
+  import roomService from "../services/room.service";
   
 
 
@@ -50,7 +51,6 @@
   }
   })
   export default class Chat extends Vue {
-    @Prop() roomId!: string;
     [x: string]: any;
     private readonly emoji = new Emoji();
 
@@ -61,14 +61,29 @@
     private newMessages = false;
     private isModalVisible = false;
     private inviteDialog = false;
+
     created() {
       SocketService.socket.on('chat-msg', (msg) => this.recieve(msg) );
+    }
 
-      SocketService.socket.on('chatHistory', (history) => {
+    tryUntilExists (test, func, ...args) {
+      let int_ = undefined;
+      const _try = () => {
+        if (!test) return;
+        clearInterval(int_);
+        func(...args);
+      };
+      int_ = setInterval(_try, 120);
+    }
+
+    mounted() {
+      SocketService.socket.on('chatHistory', (history) => this.tryUntilExists(this.$refs.msgs, (history) => {
+        const messages = this.$refs.msgs as Element;
+        messages.innerHTML = ''; // clear old just in case
         for(const message in history){
           this.recieve(history[message].message);
         }
-      });
+      }, history));
     }
 
     goToRooms() {
@@ -80,7 +95,7 @@
       const msg = msgInput.value;
       if (msg === '') return;
 
-      const m = SocketService.sendMsg(msg, this.$route.query.id);
+      const m = SocketService.sendMsg(msg, this.$route.params.roomId);
       msgInput.value = '';
 
       this.$emit('message', m);
@@ -145,7 +160,6 @@
     }
 
     recieve(msg) {
-      console.log(msg);
       this.onMessage(msg);
     }
 
@@ -195,27 +209,6 @@
   #handle {
     user-select: none;
   }
-
-$border-radius: 1rem;
-
-$accent: violet;
-$white: azure;
-$dark: #302d32;
-$warning: #b33c3c;
-
-$message-bg: darksalmon;
-$message-fg: white;
-$sent-bg: cornflowerblue;
-$sent-fg: white;
-
-$input-bar-bg: white;
-$input-bg: white;
-$chat-bg: white;
-
-$new-messages: black;
-$name-color: black;
-$time-color: black;
-
 
 input, button {
   border-radius: $border-radius;

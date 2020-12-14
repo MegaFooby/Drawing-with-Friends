@@ -10,7 +10,7 @@
         <menu-item title="Pen Tool" @click="activate(pen, 'pen', $event)" icon="pen" />
         <menu-item title="Square Tool" @click="activate(square, 'square', $event)" icon="square" />
         <menu-item title="Circle Tool" @click="activate(circle, 'circle', $event)" icon="circle" />
-        <menu-item title="Erase Tool" @click="activate(eraser, 'eraser', $event)" icon="" />
+        <menu-item title="Erase Tool" @click="activate(eraser, 'eraser', $event)" icon="eraser" />
       </menu-item-group>
       <menu-item :title="`${fill ? 'Disable':'Enable'} Fill Mode`" :active="fill" @click="fill = !fill" icon="fill-drip" />
       <menu-item title="Move Your View" :active="active(move)" @click="activate(move, 'move', $event)" icon="arrows-alt" />
@@ -31,7 +31,6 @@
     </Menu>
     <Chat 
       ref="chat"
-      :roomId="roomId"
     ></Chat>
   </div>
 </template>
@@ -131,7 +130,16 @@ export default class Canvas extends Vue {
       this.layers.get(this.$store.state.auth.user.username).activate();
     });
 
-    socket.emit('connected', this.roomId);
+    socket.on('hideHistory', (history) => {
+      let user;
+      for(user in history){
+        if(this.layers.has(user)) {
+          this.layers.get(user).opacity = 0;
+        }
+      }
+    });
+
+    socket.emit('connected', this.roomId, this.$store.state.auth.user.username);
 
     socket.on('draw', (data) => {
       if(!this.layers.has(data.user)) {
@@ -171,9 +179,16 @@ export default class Canvas extends Vue {
       }
     });
 
-    socket.on('chat-msg', (msg) => {
-      console.log("Got message:"+msg);
-      this.$refs.chat.recieve(msg);
+    socket.on('hideUser', (user) => {
+      if(this.layers.has(user)) {
+        this.layers.get(user).opacity = 0;
+      }
+    });
+
+    socket.on('showUser', (user) => {
+      if(this.layers.has(user)) {
+        this.layers.get(user).opacity = 1;
+      }
     });
   }
 
@@ -361,7 +376,7 @@ export default class Canvas extends Vue {
   }
 
   undo() {
-    socket.emit("undo", this.roomId, this.$store.state.auth.user.username, this.layers.get(this.$store.state.auth.user.username).lastChild.exportJSON());
+    socket.emit("undo", this.roomId, this.$store.state.auth.user.username);
   }
 
   setPath(path: paper.Path) {

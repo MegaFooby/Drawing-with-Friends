@@ -5,6 +5,7 @@ const schema = new Schema({
     name: { type: String, unique: true, required: true },
     isPrivate: { type: Boolean, required: true },
     users: { type: [String], required: true },
+    hiddenUsers: { type: [String], required: true},
     creatorUsername: { type: String, required: true },
     createdDate: { type: Date, default: Date.now }
 });

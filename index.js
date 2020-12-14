@@ -52,7 +52,7 @@ io.on('connection', (socket) => {
     socket.emit('connected', {message:"hi"});
 
     const updateUsersInRoom = (roomId) => {
-        roomService.users(roomId).then(usrs => socket.to(roomId).emit('userList', usrs));
+        roomService.users(roomId).then(usrs => io.to(roomId).emit('userList', usrs));
     };
 
     socket.on('disconnect', () => {
@@ -96,7 +96,8 @@ io.on('connection', (socket) => {
                     console.log(room.name, 'hide', name);
                     room.hiddenUsers.push(name);
                     room.save();
-                    socket.to(id).emit('hideUser', name);
+                    io.to(id).emit('hideUser', name);
+                    //updateUsersInRoom(id);
                 }
             }
         );
@@ -109,7 +110,8 @@ io.on('connection', (socket) => {
                     console.log(room.name, 'show', name);
                     room.hiddenUsers.remove(name);
                     room.save();
-                    socket.to(id).emit('showUser', name);
+                    io.to(id).emit('showUser', name);
+                    //updateUsersInRoom(id);
                 }
             }
         );

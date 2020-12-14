@@ -29,9 +29,7 @@
         </div>
       </menu-item-group>
     </Menu>
-    <Chat 
-      ref="chat"
-    ></Chat>
+    <Chat ref="chat"></Chat>
   </div>
 </template>
 <script src="/socket.io/socket.io.js"></script>

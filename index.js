@@ -46,8 +46,6 @@ http.listen(port, () => {
     console.log(`listening on ${port}`);
 });
 
-const activeUsers = new Map(); // map a username to the room they are in
-
 io.on('connection', (socket) => {
     let _user = undefined;
 

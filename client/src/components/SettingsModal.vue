@@ -16,6 +16,7 @@ import roomService from "../services/room.service";
 })
 export default class Modal extends Vue {
   @Prop() currentRoom!: Room;
+  @Prop() isOwner!: boolean;
   inRoom = true;
   isAdmin = true;
 
@@ -47,7 +48,7 @@ export default class Modal extends Vue {
     return true;
   }
   userIsAdmin() {
-    return this.isAdmin;
+    return this.$store.state.auth.user.admin || this.isOwner;
   }
   hide(user) {
     if (!user) return;

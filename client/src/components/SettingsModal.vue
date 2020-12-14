@@ -35,6 +35,8 @@ export default class Modal extends Vue {
 
   created() {
     SocketService.socket.on('userList', list => this.setList(list));
+    SocketService.socket.on('hideUser', (id, name) => this.show(this.userList.find( u => u.username === name)));
+    SocketService.socket.on('showUser', (id, name) => this.hide(this.userList.find( u => u.username === name)));
   }
 
   close() {
@@ -48,10 +50,12 @@ export default class Modal extends Vue {
     return this.isAdmin;
   }
   hide(user) {
+    if (!user) return;
     user.isHidden = true;
     SocketService.socket.emit('hideUser', this.$route.params.roomId, user.username)
   }
   show(user) {
+    if (!user) return;
     user.isHidden = false;
     SocketService.socket.emit('showUser', this.$route.params.roomId, user.username)
   }
@@ -91,7 +95,7 @@ export default class Modal extends Vue {
                   <span v-if="userIsAdmin()" class="actions">
                     <menu-item v-if="!user.isHidden" title="Hide User's Layer" @click="hide(user)" icon="eye"/>
                     <menu-item v-if="user.isHidden" title="Show User's Layer" @click="show(user)" icon="eye-slash"/>
-                    <menu-item v-if="roomIsPrivate()" title="Remove User From Room" @click="removeUser(user)" icon="times"/>
+                    <!-- <menu-item v-if="roomIsPrivate()" title="Remove User From Room" @click="removeUser(user)" icon="times"/> -->
                   </span>
                 </li>
               </ul>

@@ -97,6 +97,7 @@ io.on('connection', (socket) => {
                     room.hiddenUsers.push(name);
                     room.save();
                     io.to(id).emit('hideUser', name);
+                    //updateUsersInRoom(id);
                 }
             }
         );
@@ -110,6 +111,7 @@ io.on('connection', (socket) => {
                     room.hiddenUsers.remove(name);
                     room.save();
                     io.to(id).emit('showUser', name);
+                    //updateUsersInRoom(id);
                 }
             }
         );

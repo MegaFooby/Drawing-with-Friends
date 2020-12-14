@@ -19,6 +19,7 @@ const io = require('socket.io')(http, {
 const db = require('helpers/db');
 const { emit } = require('process');
 const Drawing = db.Drawing;
+const Room = db.Room;
 const ChatMessage = db.ChatMessage;
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -65,7 +66,33 @@ io.on('connection', (socket) => {
         drawing.save();
     });
 
-    socket.on("undo", (id, name) => {
+    socket.on("hideUser", (id, name) => {
+        Room.findOne({_id: id},
+            (err, room) => {
+                console.log(room.name);
+                if((name in room.users) && !(name in room.hiddenUsers)){
+                    room.hiddenUsers.append(name);
+                    room.save();
+                    socket.broadcast.to(id).emit('hideUser', id, name);
+                }
+            }
+        );
+    });
+
+    socket.on("showUser", (id, name) =>{
+        Room.findOne({_id: id},
+            (err, room) => {
+                console.log(room.name);
+                if((name in room.users) && (name in room.hiddenUsers)){
+                    room.hiddenUsers.remove(name);
+                    room.save();
+                    socket.broadcast.to(id).emit('showUser', id, name);
+                }
+            }
+        );
+    })
+
+    socket.on("undo", (id, name, line) => {
         Drawing.find({ user: name, roomid: id },
             (err, result) => {
                 Drawing.findOneAndDelete({ _id: result[result.length-1]._id }, function (err) {

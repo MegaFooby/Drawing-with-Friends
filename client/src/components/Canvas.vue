@@ -29,7 +29,10 @@
         </div>
       </menu-item-group>
     </Menu>
-    <Chat ref="chat"></Chat>
+    <Chat 
+      ref="chat"
+      :creatorUsername="ownerUsername"
+    ></Chat>
   </div>
 </template>
 <script src="/socket.io/socket.io.js"></script>
@@ -95,6 +98,8 @@ export default class Canvas extends Vue {
 
   private seletedCursor = "";
 
+  private ownerUsername = "";
+
   created(){
     console.log("Current room id: "+this.roomId);
 
@@ -128,7 +133,10 @@ export default class Canvas extends Vue {
       this.layers.get(this.$store.state.auth.user.username).activate();
     });
 
-    socket.on('hideHistory', (history) => {
+    socket.on('roomInfo', (room) => {
+      this.ownerUsername = room.creatorUsername;
+      const history = room.hiddenUsers;
+      console.log(room);
       let user;
       for(user in history){
         if(this.layers.has(user)) {

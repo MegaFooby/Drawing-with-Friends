@@ -77,7 +77,7 @@ io.on('connection', (socket) => {
 
         Drawing.find({roomid: roomId},(err, drawings) => socket.emit('drawHistory', drawings));
         ChatMessage.find({roomid: roomId},(err, messages) => socket.emit('chatHistory', messages));
-        Room.find({roomid: roomId}, (err, hidden) => socket.emit('hideHistory', hidden.hiddenUsers));
+        Room.findById(roomId, (err, room) => socket.emit('roomInfo', room));
     });
 
     socket.on('draw', (data) =>{

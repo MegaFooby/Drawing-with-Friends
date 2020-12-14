@@ -10,7 +10,8 @@ module.exports = {
     getById,
     create,
     update,
-    delete: _delete
+    delete: _delete,
+    makeAdmin
 };
 
 async function authenticate({ username, password }) {
@@ -65,6 +66,11 @@ async function update(id, userParam) {
     Object.assign(user, userParam);
 
     await user.save();
+}
+
+async function makeAdmin(username) {
+    const user = await User.findOne({username: username});
+    await user.updateOne({admin: true});
 }
 
 async function _delete(id) {

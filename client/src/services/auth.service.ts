@@ -39,6 +39,14 @@ class AuthService {
       password: user.password
     });
   }
+
+  makeAdmin(username:string) {
+    return axios
+      .put(API_URL + 'users/makeAdmin/' + username, {}, {headers: authHeader()})
+      .then(response => {
+        return response.data;
+      });
+  }
 }
 
 export default new AuthService();

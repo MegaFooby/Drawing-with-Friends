@@ -94,4 +94,7 @@ export default class InviteCode extends Vue {
 .menu-card {
   border: $card-border-style;
 }
+.v-dialog {
+  border-radius: 24px;
+}
 </style>

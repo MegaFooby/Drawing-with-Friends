@@ -120,6 +120,7 @@ io.on('connection', (socket) => {
     socket.on("undo", (id, name, line) => {
         Drawing.find({ user: name, roomid: id },
             (err, result) => {
+                if(result.length == 0) return;
                 Drawing.findOneAndDelete({ _id: result[result.length-1]._id }, function (err) {
                     if(err) console.log(err);
                 });

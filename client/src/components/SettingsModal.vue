@@ -32,8 +32,6 @@ class User {
 })
 export default class Modal extends Vue {
   @Prop() currentRoom!: Room;
-  newUN = "";
-  newPW =  "";
   inRoom = true;
   isAdmin = true;
 
@@ -57,9 +55,6 @@ export default class Modal extends Vue {
 
   close() {
     this.$emit("close");
-  }
-  processForm() {
-    console.log({ newUN: this.newUN, newPW: this.newPW });
   }
 
   roomIsPrivate() {
@@ -97,23 +92,10 @@ export default class Modal extends Vue {
         >
           <header class="modal-header" id="modalTitle">
             <slot name="header"><b>Settings</b></slot>
+            <menu-item title="Cancel" @click="close()" icon="times"/>
           </header>
           <section class="modal-body" id="modalDescription">
             <slot name="body">
-              <label for="newUN">Change Username:</label><br />
-              <input
-                type="text"
-                class="input"
-                v-model="newUN"
-                name="newUN"
-              /><br />
-              <label for="newPW">Change Password:</label><br />
-              <input
-                type="text"
-                class="input"
-                v-model="newPW"
-                name="newPW"
-              /><br />
               <!--
               <label for="newColor">Change Colour (Hex):</label><br />
               <input
@@ -122,7 +104,6 @@ export default class Modal extends Vue {
                 name="newColor"
                 value=""
               /><br /><br />-->
-              <br v-if="currentRoom" />
               <label v-if="currentRoom">Users in Room:</label>
               <ul v-if="currentRoom" class="user-list">
                 <li v-for="user in userList" :key="user.username">
@@ -139,12 +120,6 @@ export default class Modal extends Vue {
               </ul>
             </slot>
           </section>
-          <footer class="modal-footer">
-            <slot name="footer">
-              <menu-item title="Cancel" @click="close()" icon="times"/>
-              <menu-item title="Accept Changes" @click="processForm()" icon="check"/>
-            </slot>
-          </footer>
         </div>
       </div>
     </transition>

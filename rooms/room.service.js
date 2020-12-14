@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const db = require('helpers/db');
 const Room = db.Room;
+const User = db.User;
 
 module.exports = {
     getAll,
@@ -14,7 +15,13 @@ module.exports = {
 };
 
 async function getAll({user}) {
-    return await Room.find({$or:[{"users": { $all : [user] }},{isPrivate: false}]});
+    const userType = await User.findOne({username: user});
+    if(userType.admin){
+        return await Room.find({});
+    }
+    else{
+        return  await Room.find({$or:[{"users": { $all : [user] }},{isPrivate: false}]});
+    }
 }
 
 async function getById(id) {

@@ -137,7 +137,7 @@ export default class Canvas extends Vue {
       }
     });
 
-    socket.emit('connected', this.roomId);
+    socket.emit('connected', this.roomId, this.$store.state.auth.user.username);
 
     socket.on('draw', (data) => {
       if(!this.layers.has(data.user)) {

@@ -57,12 +57,26 @@
 
     created() {
       SocketService.socket.on('chat-msg', (msg) => this.recieve(msg) );
+    }
 
-      SocketService.socket.on('chatHistory', (history) => {
+    tryUntilExists (test, func, ...args) {
+      let int_ = undefined;
+      const _try = () => {
+        if (!test) return;
+        clearInterval(int_);
+        func(...args);
+      };
+      int_ = setInterval(_try, 120);
+    }
+
+    mounted() {
+      SocketService.socket.on('chatHistory', (history) => this.tryUntilExists(this.$refs.msgs, (history) => {
+        const messages = this.$refs.msgs as Element;
+        messages.innerHTML = ''; // clear old just in case
         for(const message in history){
           this.recieve(history[message].message);
         }
-      });
+      }, history));
     }
 
     goToRooms() {
@@ -139,7 +153,6 @@
     }
 
     recieve(msg) {
-      console.log(msg);
       this.onMessage(msg);
     }
 

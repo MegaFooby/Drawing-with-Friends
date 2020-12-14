@@ -44,19 +44,38 @@ http.listen(port, () => {
     console.log(`listening on ${port}`);
 });
 
+const activeUsers = new Map(); // map a username to the room they are in
+
 io.on('connection', (socket) => {
     console.log('Someone connected');
+    let _user = undefined;
 
     socket.emit('connected', {message:"hi"});
 
-    socket.on('connected', (id) => {
-        socket.room = id;
-        socket.join(id); 
-        const drawing = Drawing.find({roomid: id},(err, drawings) => {socket.emit('drawHistory', drawings);});
-        const chat = ChatMessage.find({roomid: id},(err, messages) => {socket.emit('chatHistory', messages);});
-        console.log("Drawings found:"+drawing);
-        console.log("Connecting to room " + id);
-        Room.find({roomid: id}, (err, hidden) => {socket.emit('hideHistory', hidden.hiddenUsers);})
+    const leaveRoom = () => {
+        if (_user === undefined) return;
+        if (activeUsers.has(_user)) {
+            let roomId = activeUsers.get(_user);
+            activeUsers.delete(_user);
+            console.log(`${_user} left room ${roomId}`);
+        }
+    }
+
+    socket.on('disconnect', leaveRoom);
+
+    socket.on('connected', (roomId, user) => {
+        _user = user;
+        socket.room = roomId;
+        if (socket.room) {
+            socket.leave(socket.room);
+            leaveRoom();
+        }
+        socket.join(roomId); 
+        Drawing.find({roomid: roomId},(err, drawings) => socket.emit('drawHistory', drawings));
+        ChatMessage.find({roomid: roomId},(err, messages) => socket.emit('chatHistory', messages));
+        Room.find({roomid: roomId}, (err, hidden) => socket.emit('hideHistory', hidden.hiddenUsers));
+        console.log(`${user} joined room ${roomId}`);
+        activeUsers.set(user, roomId);
     });
 
     socket.on('draw', (data) =>{

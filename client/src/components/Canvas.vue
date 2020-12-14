@@ -109,7 +109,9 @@ export default class Canvas extends Vue {
       for(drawing in history){
         if(!this.layers.has(history[drawing].user)) {
           this.layers.set(history[drawing].user, new paper.Layer());
-          this.scope.project.addLayer(this.layers.get(history[drawing].user));
+          //this.scope.project.addLayer(this.layers.get(history[drawing].user));
+          this.layers.get(this.$store.state.auth.user.username).remove();
+          this.scope.project.layers.push(this.layers.get(this.$store.state.auth.user.username));
         }
         this.layers.get(history[drawing].user).activate();
         if(history[drawing].erase) {
@@ -131,6 +133,9 @@ export default class Canvas extends Vue {
     socket.on('draw', (data) => {
       if(!this.layers.has(data.user)) {
         this.layers.set(data.user, new paper.Layer());
+        //this.scope.project.addLayer(this.layers.get(data.user));
+        this.layers.get(this.$store.state.auth.user.username).remove();
+        this.scope.project.layers.push(this.layers.get(this.$store.state.auth.user.username));
       }
       this.layers.get(data.user).activate();
       console.log("Got a drawing from server");

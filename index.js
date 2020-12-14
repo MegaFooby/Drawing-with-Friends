@@ -120,34 +120,6 @@ io.on('connection', (socket) => {
         const message = new ChatMessage(data);
         message.save();
     });
-
-    socket.on('hideUser', (room, user) => {
-        Drawing.find(
-            { roomid: room },
-            function (err, doc) {
-                let hidden = JSON.parse(doc);
-                if(typeof hidden.find(user) === "undefined") {
-                    hidden.push(user);
-                    Drawing.updateOne({_id: doc._id}, {$set: {hidden: JSON.stringify(hidden)}});
-                }
-            }
-        );
-        io.broadcast.to(data.roomid).emit('hideUser', user);
-    });
-
-    socket.on('showUser', (room, user) => {
-        Drawing.find(
-            { roomid: room },
-            function (err, doc) {
-                let hidden = JSON.parse(doc);
-                if(typeof hidden.find(user) !== "undefined") {
-                    hidden.splice(hidden.find(user),1);
-                    Drawing.updateOne({_id: doc._id}, {$set: {hidden: JSON.stringify(hidden)}});
-                }
-            }
-        );
-        io.broadcast.to(data.roomid).emit('showUser', user);
-    });
 });
 
 async function main() {

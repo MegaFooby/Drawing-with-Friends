@@ -11,26 +11,23 @@
         v-bind="attrs"
         v-on="on"
       >
-        Have an invite code?
+        Admin Panel
       </v-btn>
     </template>
     <v-card 
       class="rounded-xl menu-card"
     >
         <v-card-title class="headline">
-          Join Room
+          Admin
         </v-card-title>
-        <v-card-text>Use an invite code to join a room:
+        <v-card-text>Make another user an admin
           <v-text-field
-          label="Invite code"
-          v-model="code"
-        ></v-text-field>
-        <v-alert
-          v-model="error"
-          dense
-          type="error"
-          dismissible
-        >Invalid invite code</v-alert>
+            label="Username"
+            v-model="username"
+            append-icon="mdi-account-plus"
+            @click:append="addAdmin"
+            @keydown.enter="addAdmin"
+          ></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -38,44 +35,46 @@
             text
             @click="closeDialog"
           >
-            Cancel
-          </v-btn>
-          <v-btn
-            text
-            @click="joinRoom"
-          >
-            Join
+            Close
           </v-btn>
         </v-card-actions>
       </v-card>
+
+      <v-snackbar
+        v-model="snackbar"
+      >{{ snackbarMessage }}
+      </v-snackbar>
     </v-dialog>
   </div>
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
-import { Room } from "../models/room";
-
-import RoomService from "../services/room.service";
+import AuthService from "../services/auth.service";
 
 @Component
-export default class InviteCodePrompt extends Vue {
-  private code = "";
+export default class AdminPanel extends Vue {
   private dialog = false;
-  private error = false;
 
-  joinRoom() {
-    RoomService.join(this.code, this.$store.state.auth.user.username).then(
-      res => {
-        this.$router.push({path: "/room/"+this.code});
-      },
-      error => {
-        this.error = true;
-      }
-    );
-  }
+  private username = "";
+  private snackbar = false;
+  private snackbarMessage = "";
 
   closeDialog() {
     this.dialog = false;
+  }
+
+  addAdmin() {
+    AuthService.makeAdmin(this.username).then(
+      res => {
+        this.snackbarMessage = "Added!";
+        this.username = "";
+        this.snackbar = true;
+      },
+      error => {
+        this.snackbarMessage = "Invalid Username";
+        this.snackbar = true;
+      }
+    );
   }
 }
 </script>

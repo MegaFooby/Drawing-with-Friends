@@ -10,6 +10,7 @@ router.get('/current', getCurrent);
 router.get('/:id', getById);
 router.put('/:id', update);
 router.delete('/:id', _delete);
+router.put('/makeAdmin/:username', makeAdmin);
 
 module.exports = router;
 
@@ -50,6 +51,16 @@ function update(req, res, next) {
     userService.update(req.params.id, req.body)
         .then(() => res.json({}))
         .catch(err => next(err));
+}
+
+function makeAdmin(req, res, next) {
+    userService
+      .makeAdmin(req.params.username)
+      .then(() => res.json({}))
+      .catch((err) => {
+          console.log(err);
+          next(err)
+      });
 }
 
 function _delete(req, res, next) {

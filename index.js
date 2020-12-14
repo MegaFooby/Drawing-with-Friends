@@ -73,7 +73,7 @@ io.on('connection', (socket) => {
         socket.join(roomId); 
         Drawing.find({roomid: roomId},(err, drawings) => socket.emit('drawHistory', drawings));
         ChatMessage.find({roomid: roomId},(err, messages) => socket.emit('chatHistory', messages));
-        Room.find({roomid: roomId}, (err, hidden) => socket.emit('hideHistory', hidden.hiddenUsers));
+        Room.findById(roomId, (err, room) => socket.emit('roomInfo', room));
         console.log(`${user} joined room ${roomId}`);
         activeUsers.set(user, roomId);
     });

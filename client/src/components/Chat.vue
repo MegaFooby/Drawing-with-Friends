@@ -25,7 +25,7 @@
       <font-awesome-icon title="Settings" v-on:click="showModal()" icon="cog"></font-awesome-icon> <!-- tried to use "cogs", not sure why it isn't found -->
       <font-awesome-icon title="Browse Rooms" v-on:click="goToRooms()" icon="th-large"></font-awesome-icon>
       <font-awesome-icon title="Show Chat" v-on:click="open = !open" icon="comments"></font-awesome-icon>
-      <font-awesome-icon title="Invite User" v-on:click.stop="showInviteDialog()" icon="user-plus"></font-awesome-icon>
+      <font-awesome-icon title="Invite User" v-on:click.stop="showInviteDialog()" icon="user-plus" v-if="isAdmin"></font-awesome-icon>
     </div>
       <modal v-show="isModalVisible" @close="closeModal" :currentRoom="$route.params.roomId"/>
       <invite-code :roomId="$route.params.roomId" :dialog="inviteDialog" @close="closeInviteDialog()"/>      
@@ -51,6 +51,7 @@
   }
   })
   export default class Chat extends Vue {
+    @Prop() creatorUsername!: string;
     [x: string]: any;
     private readonly emoji = new Emoji();
 
@@ -177,6 +178,11 @@
 
     closeInviteDialog() {
       this.inviteDialog = false;
+    }
+
+    get isAdmin() {
+      const user = this.$store.state.auth.user;
+      return user.admin || user.username === this.creatorUsername;
     }
   }
 

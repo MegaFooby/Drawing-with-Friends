@@ -38,10 +38,12 @@ async function create(RoomParam) {
     return await room.save();
 }
 
-async function join({roomname, username}) {
+async function join({id, username}) {
     // TODO: check if room and user exists
-    const room = await Room.findOne({ name: roomname });
-    room.users.push(username)
+    const room = await Room.findById(id);
+    if (!room.users.includes(username)){
+        room.users.push(username);
+    }
     await room.save();
 }
 

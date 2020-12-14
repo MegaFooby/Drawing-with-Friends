@@ -25,9 +25,10 @@
       <font-awesome-icon title="Settings" v-on:click="showModal()" icon="cog"></font-awesome-icon> <!-- tried to use "cogs", not sure why it isn't found -->
       <font-awesome-icon title="Browse Rooms" v-on:click="goToRooms()" icon="th-large"></font-awesome-icon>
       <font-awesome-icon title="Show Chat" v-on:click="open = !open" icon="comments"></font-awesome-icon>
-           
+      <font-awesome-icon title="Invite User" v-on:click.stop="showInviteDialog()" icon="user-plus"></font-awesome-icon>
     </div>
       <modal v-show="isModalVisible" @close="closeModal" />
+      <invite-code :roomId="roomId" :dialog="inviteDialog" @close="closeInviteDialog()"/>
   </div>
 </template>
 <script lang="ts">
@@ -37,16 +38,19 @@
   import Emoji from "./helpers/emoji";
   import { getTime } from '../plugins/time';
   import modal from "../components/SettingsModal.vue";
+  import InviteCode from "./InviteCode.vue";
   
 
 
   /** A component to make menus have consistant styling and be movable */
   @Component({
   components: {
-    modal
+    modal,
+    InviteCode
   }
   })
   export default class Chat extends Vue {
+    @Prop() roomId!: string;
     [x: string]: any;
     private readonly emoji = new Emoji();
 
@@ -56,6 +60,7 @@
     private currentlyScrolling = false;
     private newMessages = false;
     private isModalVisible = false;
+    private inviteDialog = false;
     created() {
       SocketService.socket.on('chat-msg', (msg) => this.recieve(msg) );
 
@@ -152,6 +157,13 @@
       this.isModalVisible = false;
     }
 
+    showInviteDialog() {
+      this.inviteDialog = true;
+    }
+
+    closeInviteDialog() {
+      this.inviteDialog = false;
+    }
   }
 
 </script>
@@ -165,7 +177,7 @@
     z-index: 10000;
     display: flex;
     height: 2rem;
-    width: 7rem;
+    width: 9rem;
     border: 2px solid black;
     border-radius: 1rem;
     font-size: 1rem;

@@ -47,9 +47,7 @@
       </v-row>
     </v-container>
     <div class="d-flex justify-space-between pa-3 mt-auto" ref="otherButtons">
-      <v-btn rounded class="black--text menu-button">
-        Have an invite code?
-      </v-btn>
+      <invite-code-prompt/>
       <v-btn rounded class="black--text menu-button" @click="logout"
         >Logout</v-btn
       >
@@ -66,12 +64,14 @@
 import { Component, Vue } from "vue-property-decorator";
 import modal from "../components/SettingsModal.vue";
 import DeletePrompt from "./DeletePrompt.vue";
+import InviteCodePrompt from "./InviteCodePrompt.vue";
 import { Room } from "../models/room";
 
 @Component({
   components: {
     modal,
-    DeletePrompt
+    DeletePrompt,
+    InviteCodePrompt
   }
 })
 export default class RoomMenu extends Vue {

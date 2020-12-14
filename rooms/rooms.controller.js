@@ -7,6 +7,7 @@ router.post('/create', create);
 router.post('/join', join);
 router.post('/', getAll);
 router.get('/:id', getById);
+router.get('/:id/users', getUsers);
 router.put('/:id', update);
 router.delete('/:id', _delete);
 
@@ -27,6 +28,12 @@ function join(req, res, next) {
 function getAll(req, res, next) {
     roomService.getAll(req.body)
         .then(rooms => res.json(rooms))
+        .catch(err => next(err));
+}
+
+function getUsers(req, res, next) {
+    roomService.users(req.params.id)
+        .then(users => res.json(users))
         .catch(err => next(err));
 }
 

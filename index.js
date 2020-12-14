@@ -13,7 +13,7 @@ const http = require('http').createServer(app);
 
 const io = require('socket.io')(http, {
     cors: {
-      origin: '*',
+        origin: '*',
     }
 });
 const db = require('helpers/db');
@@ -27,12 +27,14 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use(jwt()); // auth for current logged in user
- 
+
 app.get('/', (req, res) => {            // Home request
     res.json({
         message: 'Drawing with friends!'
     });
 });
+
+const roomService = require('./rooms/room.service');
 
 app.use('/users', require('./users/users.controller'));     // Users api endpoints
 app.use('/rooms', require('./rooms/rooms.controller'));     // Rooms api endpoints
@@ -47,35 +49,37 @@ http.listen(port, () => {
 const activeUsers = new Map(); // map a username to the room they are in
 
 io.on('connection', (socket) => {
-    console.log('Someone connected');
     let _user = undefined;
 
     socket.emit('connected', {message:"hi"});
 
-    const leaveRoom = () => {
-        if (_user === undefined) return;
-        if (activeUsers.has(_user)) {
-            let roomId = activeUsers.get(_user);
-            activeUsers.delete(_user);
-            console.log(`${_user} left room ${roomId}`);
-        }
-    }
+    const updateUsersInRoom = (roomId) => {
+        roomService.users(roomId).then(usrs => socket.broadcast.to(roomId).emit('userList', usrs));
+    };
 
-    socket.on('disconnect', leaveRoom);
+    socket.on('disconnect', () => {
+        console.log('disconnecting')
+        roomService.leaveRoom(socket.room, _user);
+        updateUsersInRoom(socket.room);
+    });
 
     socket.on('connected', (roomId, user) => {
         _user = user;
-        socket.room = roomId;
         if (socket.room) {
+            console.log('connecting')
             socket.leave(socket.room);
-            leaveRoom();
+            roomService.leaveRoom(socket.room, user);
+            updateUsersInRoom(roomId);
         }
+
+        socket.room = roomId;
         socket.join(roomId); 
+        roomService.joinRoom(roomId, user);
+        updateUsersInRoom(roomId);
+
         Drawing.find({roomid: roomId},(err, drawings) => socket.emit('drawHistory', drawings));
         ChatMessage.find({roomid: roomId},(err, messages) => socket.emit('chatHistory', messages));
         Room.find({roomid: roomId}, (err, hidden) => socket.emit('hideHistory', hidden.hiddenUsers));
-        console.log(`${user} joined room ${roomId}`);
-        activeUsers.set(user, roomId);
     });
 
     socket.on('draw', (data) =>{
@@ -170,3 +174,4 @@ async function listDatabases(db) {
     console.log("Databases:");
     databasesList.databases.forEach(db => console.log(` - ${db.name}`));
 };
+

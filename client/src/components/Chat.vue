@@ -22,7 +22,7 @@
     </div>
     <div class="closed" :class="{open}">
       <font-awesome-icon class="chat-handle" icon="grip-lines-vertical"></font-awesome-icon>
-      <font-awesome-icon title="Settings" v-on:click="showModal()" icon="circle"></font-awesome-icon> <!-- tried to use "cogs", not sure why it isn't found -->
+      <font-awesome-icon title="Settings" v-on:click="showModal()" icon="cog"></font-awesome-icon> <!-- tried to use "cogs", not sure why it isn't found -->
       <font-awesome-icon title="Browse Rooms" v-on:click="goToRooms()" icon="th-large"></font-awesome-icon>
       <font-awesome-icon title="Show Chat" v-on:click="open = !open" icon="comments"></font-awesome-icon>
            

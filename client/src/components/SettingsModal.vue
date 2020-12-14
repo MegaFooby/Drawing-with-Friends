@@ -1,15 +1,38 @@
 <script>
+  import Component from 'vue-class-component';
+  import MenuItem from "./menu/MenuItem.vue";
+//import User from "../models/user";
 export default {
   name: "modal",
+  data() {
+    return {
+      newUN: "",
+      newPW: ""
+    };
+  },
+  components: {
+    MenuItem
+  },
   methods: {
     close() {
       this.$emit("close");
+    },
+    processForm() {
+      console.log({ newUN: this.newUN, newPW: this.newPW });
+    },
+
+    loggedIn() {
+      return this.$store.state.auth.status.loggedIn;
+    },
+
+    getUser() {
+      return this.$store.state.auth.user;
     }
   }
 };
 </script>
 <template>
-  <form METHOD="POST" ACTION="http://jkorpela.fi/cgi-bin/echo.cgi">
+  <form @submit.prevent="">
     <transition name="modal-fade">
       <div class="modal-backdrop">
         <div
@@ -19,15 +42,7 @@ export default {
           aria-describedby="modalDescription"
         >
           <header class="modal-header" id="modalTitle">
-            <slot name="header">Settings</slot>
-            <button
-              type="button"
-              class="btn-close"
-              @click="close"
-              aria-label="Close modal"
-            >
-              x
-            </button>
+            <slot name="header"><b>Settings</b></slot>
           </header>
           <section class="modal-body" id="modalDescription">
             <slot name="body">
@@ -35,31 +50,29 @@ export default {
               <input
                 type="text"
                 class="input"
-                id="newUN"
+                v-model="newUN"
                 name="newUN"
-                value=""
               /><br />
               <label for="newPW">Change Password:</label><br />
-              <input type="text" id="newPW" name="newPW" value="" /><br />
+              <input
+                type="text"
+                class="input"
+                v-model="newPW"
+                name="newPW"
+              /><br /><!--
               <label for="newColor">Change Colour (Hex):</label><br />
               <input
                 type="text"
                 id="newColor"
                 name="newColor"
                 value=""
-              /><br /><br />
+              /><br /><br />-->
             </slot>
           </section>
           <footer class="modal-footer">
             <slot name="footer">
-              <button
-                type="submit"
-                class="btn-close"
-                @click="close"
-                aria-label="Close modal"
-              >
-                Apply
-              </button>
+              <menu-item title="Cancel" @click="close()" icon="times"/>
+              <menu-item title="Accept Changes" @click="processForm()" icon="check"/>
             </slot>
           </footer>
         </div>
@@ -67,7 +80,7 @@ export default {
     </transition>
   </form>
 </template>
-<style scoped>
+<style scoped  lang="scss">
 input[type="text"],
 textarea {
   background-color: rgb(255, 255, 255);
@@ -88,7 +101,9 @@ textarea {
 }
 
 .modal {
-  background: #ffffff;
+  padding: 0.5rem 1rem;
+  background: $menu-bg;
+  border-radius: 1.25rem;
   border: 2px solid rgb(0, 0, 0);
   box-shadow: 2px 2px 20px 1px;
   overflow-x: auto;
@@ -100,27 +115,34 @@ textarea {
 
 .modal-header,
 .modal-footer {
-  padding: 15px;
+  padding:  0;
   display: flex;
 }
 
 .modal-header {
   border-bottom: 1px solid #cacaca;
-  background: ffffff;
+  background: $menu-bg;
   color: rgb(1, 9, 17);
   justify-content: space-between;
+  align-items: center;
 }
 
 .modal-footer {
-  background: ffffff;
+  background: $menu-bg;
   border-top: 1px solid #cacaca;
   justify-content: flex-end;
 }
 
 .modal-body {
-  background: ffffff;
+  background: $menu-bg;
   position: relative;
   padding: 20px 10px;
+}
+
+.close-buttons {
+  font-size: 1rem;
+  padding: 0;
+  z-index: 100000;
 }
 
 .btn-close {

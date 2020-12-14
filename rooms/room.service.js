@@ -86,7 +86,7 @@ function joinRoom (roomId, user) {
 
 function getUsersForRoom(roomId) {
     return new Promise(resolve => {
-        if (!roomId) resolve([]);
+        if (!roomId || roomId == 'default' || roomId == 'undefined') resolve([]);
         else
             Room.findOne({_id: roomId})
             .then( room => {

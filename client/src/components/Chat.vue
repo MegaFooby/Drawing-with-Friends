@@ -190,6 +190,7 @@
 <style lang="scss">
   .chat-container {
     position: absolute;
+    top: 2.5rem;
   }
 
   .closed.open { display: none; }

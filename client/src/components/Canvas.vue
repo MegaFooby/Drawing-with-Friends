@@ -1,6 +1,9 @@
 <template>
   <div @mousemove="mouseMove($event)">
-    <canvas 
+    <h1 class="room-name">
+      {{roomName || ''}}
+    </h1>
+    <canvas
       id="myCanvas" 
       resize
       :class="[seletedCursor]"
@@ -63,6 +66,7 @@ const socket = SocketService.socket;
 })
 export default class Canvas extends Vue {
   @Prop({default: 'default'}) roomId!: string;
+  private roomName = 'Default Room';
   private color = new paper.Color(0, 0, 0, 255);
   private fill = false;
   private width = 5;
@@ -135,6 +139,7 @@ export default class Canvas extends Vue {
 
     socket.on('roomInfo', (room) => {
       this.ownerUsername = room.creatorUsername;
+      this.roomName = room.name;
       const history = room.hiddenUsers;
       console.log(room);
       let user;
@@ -408,6 +413,12 @@ export default class Canvas extends Vue {
 }
 </script>
 <style lang="scss">
+.room-name {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
 body {
   height: 100%;
 }

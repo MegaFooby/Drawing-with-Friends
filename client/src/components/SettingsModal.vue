@@ -25,7 +25,7 @@ export default class Modal extends Vue {
   setList(list) {
     this.userList = list;
     const me = this.userList.find( u => u.username === this.$store.state.auth.user.username);
-    me.username += " (me)";
+    me.isMe = true;
     me.online = true;
     console.log(list);
   }
@@ -91,7 +91,7 @@ export default class Modal extends Vue {
                 <li v-for="user in userList" :key="user.username">
                   <span>
                     <font-awesome-icon :title="user.online ? 'Online' : 'Offline'" :class="{online: user.online, offline: !user.online}" icon="circle"></font-awesome-icon>
-                    {{user.username}}
+                    {{user.username + (user.isMe ? ' (me)' : '')}}
                   </span>
                   <span v-if="userIsAdmin()" class="actions">
                     <menu-item v-if="!user.isHidden" title="Hide User's Layer" @click="hide(user)" icon="eye"/>

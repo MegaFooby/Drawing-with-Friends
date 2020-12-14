@@ -131,8 +131,8 @@ export default class Canvas extends Vue {
     socket.on('hideHistory', (history) => {
       let user;
       for(user in history){
-        if(!this.layers.has(user)) {
-          this.layers.get(user).remove();
+        if(this.layers.has(user)) {
+          this.layers.get(user).opacity = 0;
         }
       }
     });
@@ -183,16 +183,14 @@ export default class Canvas extends Vue {
     });
 
     socket.on('hideUser', (user) => {
-      if(!this.layers.has(user)) {
-        this.layers.get(user).remove();
+      if(this.layers.has(user)) {
+        this.layers.get(user).opacity = 0;
       }
     });
 
     socket.on('showUser', (user) => {
-      if(!this.layers.has(user)) {
-        this.scope.project.layers.push(this.layers.get(user));
-        this.layers.get(this.$store.state.auth.user.username).remove();
-        this.scope.project.layers.push(this.layers.get(this.$store.state.auth.user.username));
+      if(this.layers.has(user)) {
+        this.layers.get(user).opacity = 1;
       }
     });
   }

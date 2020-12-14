@@ -46,10 +46,18 @@
         </v-col>
       </v-row>
     </v-container>
-    <div class="d-flex justify-space-between pa-3 mt-auto" ref="otherButtons">
-      <invite-code-prompt/>
-      <admin-panel v-if="isAdmin"/>
-      <v-btn rounded class="black--text menu-button" @click="logout"
+    <div 
+      class="d-flex justify-space-between pa-3 mt-auto" 
+      ref="otherButtons"
+      :class="{'flex-column':isMobile}"
+    >
+      <invite-code-prompt
+        class="mt-3"
+      />
+      <admin-panel v-if="isAdmin"
+        class="mt-3"
+      />
+      <v-btn rounded class="black--text menu-button mt-3" @click="logout"
         >Logout</v-btn
       >
     </div>
@@ -165,7 +173,11 @@ export default class RoomMenu extends Vue {
   }
 
   get cardColumns() {
-    return this.$vuetify.breakpoint.mobile?12:3;
+    return this.isMobile?12:3;
+  }
+
+  get isMobile() {
+    return this.$vuetify.breakpoint.mobile;
   }
 }
 </script>

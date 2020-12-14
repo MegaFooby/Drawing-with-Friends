@@ -27,7 +27,7 @@
       <font-awesome-icon title="Users" v-on:click="showModal()" icon="users"></font-awesome-icon>
       <font-awesome-icon title="Invite User" v-on:click.stop="showInviteDialog()" icon="user-plus" v-if="isAdmin"></font-awesome-icon>
     </div>
-      <modal v-show="isModalVisible" @close="closeModal" :currentRoom="$route.params.roomId"/>
+      <modal v-show="isModalVisible" @close="closeModal" :currentRoom="$route.params.roomId" :isOwner="isAdmin"/>
       <invite-code :roomId="$route.params.roomId" :dialog="inviteDialog" @close="closeInviteDialog()"/>      
   </div>
 </template>

@@ -26,8 +26,8 @@ class SocketIOService {
     const payload: MessagePayload = {
       roomid,
       message: {
-        name: store.state.auth.user.username,
-        from: store.state.auth.user.id,
+        name: (store.state as any).auth.user.username,
+        from: (store.state as any).auth.user.id,
         time: getTime(),
         msg: message,
         colour: "black",         // TODO: colors for users

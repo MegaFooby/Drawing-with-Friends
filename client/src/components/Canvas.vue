@@ -41,7 +41,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { ColorPicker } from "vue-accessible-color-picker";
+import ColorPicker from "vue-accessible-color-picker";
 import paper from "paper";
 
 import SocketService from "../services/socket-io.service";
@@ -365,7 +365,7 @@ export default class Canvas extends Vue {
     };
   }
 
-  updateColor(eventData: ColorPicker.colors) {
+  updateColor(eventData) {
     this.color = new paper.Color(
       eventData.colors.rgb.r,
       eventData.colors.rgb.g,

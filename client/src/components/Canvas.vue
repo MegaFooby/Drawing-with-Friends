@@ -131,8 +131,8 @@ export default class Canvas extends Vue {
     socket.on('hideHistory', (history) => {
       let user;
       for(user in history){
-        if(!this.layers.has(user)) {
-          this.layers.get(user).remove();
+        if(this.layers.has(user)) {
+          this.layers.get(user).opacity = 0;
         }
       }
     });

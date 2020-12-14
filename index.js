@@ -56,6 +56,7 @@ io.on('connection', (socket) => {
         const chat = ChatMessage.find({roomid: id},(err, messages) => {socket.emit('chatHistory', messages);});
         console.log("Drawings found:"+drawing);
         console.log("Connecting to room " + id);
+        Room.find({roomid: id}, (err, hidden) => {socket.emit('hideHistory', hiddenUsers);})
     });
 
     socket.on('draw', (data) =>{

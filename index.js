@@ -92,11 +92,11 @@ io.on('connection', (socket) => {
     socket.on("hideUser", (id, name) => {
         Room.findOne({_id: id},
             (err, room) => {
-                console.log(room.name);
-                if((name in room.users) && !(name in room.hiddenUsers)){
-                    room.hiddenUsers.append(name);
+                if(room.users.includes(name) && !room.hiddenUsers.includes(name)){
+                    console.log(room.name, 'hide', name);
+                    room.hiddenUsers.push(name);
                     room.save();
-                    socket.broadcast.to(id).emit('hideUser', id, name);
+                    socket.to(id).emit('hideUser', name);
                 }
             }
         );
@@ -105,11 +105,11 @@ io.on('connection', (socket) => {
     socket.on("showUser", (id, name) =>{
         Room.findOne({_id: id},
             (err, room) => {
-                console.log(room.name);
-                if((name in room.users) && (name in room.hiddenUsers)){
+                if(room.users.includes(name) && room.hiddenUsers.includes(name)){
+                    console.log(room.name, 'show', name);
                     room.hiddenUsers.remove(name);
                     room.save();
-                    socket.broadcast.to(id).emit('showUser', id, name);
+                    socket.to(id).emit('showUser', name);
                 }
             }
         );

@@ -9,22 +9,6 @@ import roomService from "../services/room.service";
 
   //import User from "../models/user";
 
-class User {
-  id: string;
-  isHidden: boolean;
-  online: boolean;
-  constructor (public name: string) {
-    this.id = Math.random().toString();
-    this.isHidden = Math.random() > 0.5;
-    this.online = Math.random() > 0.5;
-  }
-  hide() {
-    this.isHidden = true;
-  }
-  show() {
-    this.isHidden = false;
-  }
-}
 @Component({
   name: "modal",
 
@@ -65,9 +49,11 @@ export default class Modal extends Vue {
   }
   hide(user) {
     user.isHidden = true;
+    SocketService.socket.emit('hideUser', this.$route.params.roomId, user.username)
   }
   show(user) {
     user.isHidden = false;
+    SocketService.socket.emit('showUser', this.$route.params.roomId, user.username)
   }
 
   loggedIn() {

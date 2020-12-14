@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex flex-column view" ref="window">
-    <button type="button" class="btn" @click="showModal">Settings</button>
+    <!--<button type="button" class="btn" @click="showModal">Settings</button>-->
     <modal v-show="isModalVisible" @close="closeModal" />
     <v-img src="../assets/logo.png" contain max-height="125" ref="logo"></v-img>
     <v-container

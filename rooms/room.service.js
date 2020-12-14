@@ -5,13 +5,19 @@ const db = require('helpers/db');
 const Room = db.Room;
 const User = db.User;
 
+const activeUsers = new Map(); // map a username to the room they are in
+
 module.exports = {
     getAll,
     getById,
     create,
     join,
     update,
-    delete: _delete
+    delete: _delete,
+    users: getUsersForRoom,
+    activeUsers,
+    leaveRoom,
+    joinRoom,
 };
 
 async function getAll({user}) {
@@ -62,4 +68,40 @@ async function update(id, RoomParam) {
 
 async function _delete(id) {
     await Room.findByIdAndRemove(id);
+}
+
+function leaveRoom(roomId, user) {
+    if (user === undefined) return;
+    if (activeUsers.has(user)) {
+        let roomId = activeUsers.get(user);
+        activeUsers.delete(user);
+        console.log(`${user} left room ${roomId}`);
+    }
+}
+
+function joinRoom (roomId, user) {
+    activeUsers.set(user, roomId);
+    console.log(`${user} joined room ${roomId}`);
+}
+
+function getUsersForRoom(roomId) {
+    return new Promise(resolve => {
+        Room.findOne({_id: roomId})
+            .then( room => {
+                if (!room)
+                    resolve([]);
+                else
+                    Promise.all(
+                        room.users.map(username =>
+                            User.findOne({ username })
+                                .then( usr => !usr ? null : ({
+                                    ...usr.toObject(),
+                                    isHidden: room.hiddenUsers.includes(username),
+                                    online: activeUsers.has(username) && activeUsers.get(username)===roomId,
+                                })
+                        ))
+                    ).then(usrLst => resolve(usrLst.filter(u => !!u)));
+            }
+        );
+    });
 }

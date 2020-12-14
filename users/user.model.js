@@ -19,5 +19,14 @@ schema.set('toJSON', {
     }
 });
 
+schema.set('toObject', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret, options) {
+        delete ret._id;
+        delete ret.hash;
+    }
+});
+
 module.exports = mongoose.model('User', schema);
 console.log("Exported User Model");

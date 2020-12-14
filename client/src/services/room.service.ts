@@ -14,6 +14,11 @@ class RoomService {
         return response.data;
       });
   }
+  getUsers(roomId) {
+    return axios
+      .post(API_URL + `rooms/${roomId}/users`, { }, {headers: authHeader()})
+      .then(response => response.data);
+  }
   create(name: string, isPrivate: boolean, users: string[], username: string) {
     users.push(username);
     return axios

@@ -86,19 +86,21 @@ function joinRoom (roomId, user) {
 
 function getUsersForRoom(roomId) {
     return new Promise(resolve => {
-        Room.findOne({_id: roomId})
+        if (!roomId) resolve([]);
+        else
+            Room.findOne({_id: roomId})
             .then( room => {
                 if (!room)
                     resolve([]);
                 else
                     Promise.all(
                         room.users.map(username =>
-                            User.findOne({ username })
-                                .then( usr => !usr ? null : ({
-                                    ...usr.toObject(),
-                                    isHidden: room.hiddenUsers.includes(username),
-                                    online: activeUsers.has(username) && activeUsers.get(username)===roomId,
-                                })
+                            User.findOne({ username }).exec()
+                            .then( usr => !usr ? null : ({
+                                ...usr.toObject(),
+                                isHidden: room.hiddenUsers.includes(username),
+                                online: activeUsers.has(username) && activeUsers.get(username)===roomId,
+                            })
                         ))
                     ).then(usrLst => resolve(usrLst.filter(u => !!u)));
             }

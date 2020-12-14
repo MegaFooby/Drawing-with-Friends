@@ -6,8 +6,8 @@ const roomService = require('./room.service');
 router.post('/create', create);
 router.post('/join', join);
 router.post('/', getAll);
+router.post('/:id/users', getUsers);
 router.get('/:id', getById);
-router.get('/:id/users', getUsers);
 router.put('/:id', update);
 router.delete('/:id', _delete);
 

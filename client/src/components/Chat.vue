@@ -62,10 +62,6 @@
     private isModalVisible = false;
     private inviteDialog = false;
 
-    created() {
-      SocketService.socket.on('chat-msg', (msg) => this.recieve(msg) );
-    }
-
     tryUntilExists (test, func, ...args) {
       let int_ = undefined;
       const _try = () => {
@@ -74,6 +70,10 @@
         func(...args);
       };
       int_ = setInterval(_try, 120);
+    }
+
+    created() {
+      SocketService.socket.on('chat-msg', (msg) => this.recieve(msg) );
     }
 
     mounted() {

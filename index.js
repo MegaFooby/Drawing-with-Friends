@@ -67,7 +67,7 @@ io.on('connection', (socket) => {
             console.log('connecting')
             socket.leave(socket.room);
             roomService.leaveRoom(socket.room, user);
-            updateUsersInRoom(roomId);
+            updateUsersInRoom(socket.room);
         }
 
         socket.room = roomId;

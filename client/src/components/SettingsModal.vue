@@ -1,7 +1,12 @@
 <script lang="ts">
+  import Axios from "axios";
   import { Component, Vue, Prop } from "vue-property-decorator";
-import { Room } from "../models/room";
+  import { use } from "vue/types/umd";
+  import { Room } from "../models/room";
   import MenuItem from "./menu/MenuItem.vue";
+  import SocketService from '../services/socket-io.service';
+import roomService from "../services/room.service";
+
   //import User from "../models/user";
 
 class User {
@@ -31,20 +36,24 @@ export default class Modal extends Vue {
   newPW =  "";
   inRoom = true;
   isAdmin = true;
-  userList = [
-    new User('Keen Bean'),
-    new User('Sun Bun'),
-    new User('Lou Bear'),
-    new User('Keen Bean'),
-    new User('Sun Bun'),
-    new User('Lou Bear'),
-    new User('Keen Bean'),
-    new User('Sun Bun'),
-    new User('Lou Bear'),
-    new User('Keen Bean'),
-    new User('Sun Bun'),
-    new User('Lou Bear'),
-  ]
+
+  userList = []
+
+  setList(list) {
+    this.userList = list;
+    const me = this.userList.find( u => u.username === this.$store.state.auth.user.username);
+    me.username += " (me)";
+    me.online = true;
+    console.log(list);
+  }
+
+  mounted() {
+    roomService.getUsers(this.$route.params.roomId).then(list => this.setList(list));
+  }
+
+  created() {
+    SocketService.socket.on('userList', list => this.setList(list));
+  }
 
   close() {
     this.$emit("close");
@@ -59,11 +68,11 @@ export default class Modal extends Vue {
   userIsAdmin() {
     return this.isAdmin;
   }
-  hideLayer() {
-    const x = 0;
+  hide(user) {
+    user.isHidden = true;
   }
-  showLayer() {
-    const x = 0;
+  show(user) {
+    user.isHidden = false;
   }
 
   loggedIn() {
@@ -116,14 +125,14 @@ export default class Modal extends Vue {
               <br v-if="currentRoom" />
               <label v-if="currentRoom">Users in Room:</label>
               <ul v-if="currentRoom" class="user-list">
-                <li v-for="user in userList" :key="user.id">
+                <li v-for="user in userList" :key="user.username">
                   <span>
                     <font-awesome-icon :title="user.online ? 'Online' : 'Offline'" :class="{online: user.online, offline: !user.online}" icon="circle"></font-awesome-icon>
-                    {{user.name}}
+                    {{user.username}}
                   </span>
                   <span v-if="userIsAdmin()" class="actions">
-                    <menu-item v-if="!user.isHidden" title="Hide User's Layer" @click="user.hide()" icon="eye"/>
-                    <menu-item v-if="user.isHidden" title="Show User's Layer" @click="user.show()" icon="eye-slash"/>
+                    <menu-item v-if="!user.isHidden" title="Hide User's Layer" @click="hide(user)" icon="eye"/>
+                    <menu-item v-if="user.isHidden" title="Show User's Layer" @click="show(user)" icon="eye-slash"/>
                     <menu-item v-if="roomIsPrivate()" title="Remove User From Room" @click="removeUser(user)" icon="times"/>
                   </span>
                 </li>

@@ -177,11 +177,6 @@ export default class Canvas extends Vue {
       }
     });
 
-    socket.on('chat-msg', (msg) => {
-      console.log("Got message:"+msg);
-      this.$refs.chat.recieve(msg);
-    });
-
     socket.on('hideUser', (user) => {
       if(this.layers.has(user)) {
         this.layers.get(user).opacity = 0;

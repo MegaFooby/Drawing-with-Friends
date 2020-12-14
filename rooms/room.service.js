@@ -95,16 +95,14 @@ function getUsersForRoom(roomId) {
                 if (!room)
                     resolve([]);
                 else
-                    Promise.all(
-                        room.users.map(username =>
-                            User.findOne({ username }).exec()
-                            .then( usr => !usr ? null : ({
-                                ...usr.toObject(),
-                                isHidden: room.hiddenUsers.includes(username),
-                                online: activeUsers.has(username) && activeUsers.get(username)===roomId,
-                            })
-                        ))
-                    ).then(usrLst => resolve(usrLst.filter(u => !!u)));
+                    User.find({username: room.users})
+                    .then(list => {
+                        resolve(list.map(usr => ({
+                            ...usr.toObject(),
+                            isHidden: room.hiddenUsers.includes(usr.username),
+                            online: activeUsers.has(usr.username) && activeUsers.get(usr.username)===roomId,
+                        })))
+                    });
             }
         );
     });

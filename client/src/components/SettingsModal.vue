@@ -9,22 +9,6 @@ import roomService from "../services/room.service";
 
   //import User from "../models/user";
 
-class User {
-  id: string;
-  isHidden: boolean;
-  online: boolean;
-  constructor (public name: string) {
-    this.id = Math.random().toString();
-    this.isHidden = Math.random() > 0.5;
-    this.online = Math.random() > 0.5;
-  }
-  hide() {
-    this.isHidden = true;
-  }
-  show() {
-    this.isHidden = false;
-  }
-}
 @Component({
   name: "modal",
 
@@ -65,9 +49,11 @@ export default class Modal extends Vue {
   }
   hide(user) {
     user.isHidden = true;
+    SocketService.socket.emit('hideUser', this.$route.params.roomId, user.username)
   }
   show(user) {
     user.isHidden = false;
+    SocketService.socket.emit('showUser', this.$route.params.roomId, user.username)
   }
 
   loggedIn() {
@@ -91,20 +77,11 @@ export default class Modal extends Vue {
           aria-describedby="modalDescription"
         >
           <header class="modal-header" id="modalTitle">
-            <slot name="header"><b>Settings</b></slot>
+            <slot name="header"><b>Users</b></slot>
             <menu-item title="Cancel" @click="close()" icon="times"/>
           </header>
           <section class="modal-body" id="modalDescription">
             <slot name="body">
-              <!--
-              <label for="newColor">Change Colour (Hex):</label><br />
-              <input
-                type="text"
-                id="newColor"
-                name="newColor"
-                value=""
-              /><br /><br />-->
-              <label v-if="currentRoom">Users in Room:</label>
               <ul v-if="currentRoom" class="user-list">
                 <li v-for="user in userList" :key="user.username">
                   <span>
@@ -128,9 +105,8 @@ export default class Modal extends Vue {
 <style scoped  lang="scss">
 
 .user-list {
-  margin-top: 1rem;
   padding: 0;
-  max-height: 150px;
+  max-height: 45vh;
   overflow: scroll;
 
   li {

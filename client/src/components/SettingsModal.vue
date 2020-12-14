@@ -1,4 +1,6 @@
 <script>
+  import Component from 'vue-class-component';
+  import MenuItem from "./menu/MenuItem.vue";
 //import User from "../models/user";
 export default {
   name: "modal",
@@ -7,6 +9,9 @@ export default {
       newUN: "",
       newPW: ""
     };
+  },
+  components: {
+    MenuItem
   },
   methods: {
     close() {
@@ -27,7 +32,7 @@ export default {
 };
 </script>
 <template>
-  <form id="settings-form" @submit.prevent="processForm">
+  <form @submit.prevent="">
     <transition name="modal-fade">
       <div class="modal-backdrop">
         <div
@@ -37,15 +42,7 @@ export default {
           aria-describedby="modalDescription"
         >
           <header class="modal-header" id="modalTitle">
-            <slot name="header">Settings</slot>
-            <button
-              type="button"
-              class="btn-close"
-              @click="close"
-              aria-label="Close modal"
-            >
-              x
-            </button>
+            <slot name="header"><b>Settings</b></slot>
           </header>
           <section class="modal-body" id="modalDescription">
             <slot name="body">
@@ -74,14 +71,8 @@ export default {
           </section>
           <footer class="modal-footer">
             <slot name="footer">
-              <button
-                type="submit"
-                class="btn-close"
-                @click="close"
-                aria-label="Close modal"
-              >
-                Apply
-              </button>
+              <menu-item title="Cancel" @click="close()" icon="times"/>
+              <menu-item title="Accept Changes" @click="processForm()" icon="check"/>
             </slot>
           </footer>
         </div>
@@ -89,7 +80,7 @@ export default {
     </transition>
   </form>
 </template>
-<style scoped>
+<style scoped  lang="scss">
 input[type="text"],
 textarea {
   background-color: rgb(255, 255, 255);
@@ -110,7 +101,9 @@ textarea {
 }
 
 .modal {
-  background: #ffffff;
+  padding: 0.5rem 1rem;
+  background: $menu-bg;
+  border-radius: 1.25rem;
   border: 2px solid rgb(0, 0, 0);
   box-shadow: 2px 2px 20px 1px;
   overflow-x: auto;
@@ -122,27 +115,34 @@ textarea {
 
 .modal-header,
 .modal-footer {
-  padding: 15px;
+  padding:  0;
   display: flex;
 }
 
 .modal-header {
   border-bottom: 1px solid #cacaca;
-  background: ffffff;
+  background: $menu-bg;
   color: rgb(1, 9, 17);
   justify-content: space-between;
+  align-items: center;
 }
 
 .modal-footer {
-  background: ffffff;
+  background: $menu-bg;
   border-top: 1px solid #cacaca;
   justify-content: flex-end;
 }
 
 .modal-body {
-  background: ffffff;
+  background: $menu-bg;
   position: relative;
   padding: 20px 10px;
+}
+
+.close-buttons {
+  font-size: 1rem;
+  padding: 0;
+  z-index: 100000;
 }
 
 .btn-close {

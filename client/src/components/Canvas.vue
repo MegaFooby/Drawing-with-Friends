@@ -128,6 +128,15 @@ export default class Canvas extends Vue {
       this.layers.get(this.$store.state.auth.user.username).activate();
     });
 
+    socket.on('hideHistory', (history) => {
+      let user;
+      for(user in history){
+        if(!this.layers.has(user)) {
+          this.layers.get(user).remove();
+        }
+      }
+    });
+
     socket.emit('connected', this.roomId);
 
     socket.on('draw', (data) => {
@@ -171,6 +180,20 @@ export default class Canvas extends Vue {
     socket.on('chat-msg', (msg) => {
       console.log("Got message:"+msg);
       this.$refs.chat.recieve(msg);
+    });
+
+    socket.on('hideUser', (user) => {
+      if(!this.layers.has(user)) {
+        this.layers.get(user).remove();
+      }
+    });
+
+    socket.on('showUser', (user) => {
+      if(!this.layers.has(user)) {
+        this.scope.project.layers.push(this.layers.get(user));
+        this.layers.get(this.$store.state.auth.user.username).remove();
+        this.scope.project.layers.push(this.layers.get(this.$store.state.auth.user.username));
+      }
     });
   }
 
@@ -358,7 +381,7 @@ export default class Canvas extends Vue {
   }
 
   undo() {
-    socket.emit("undo", this.roomId, this.$store.state.auth.user.username, this.layers.get(this.$store.state.auth.user.username).lastChild.exportJSON());
+    socket.emit("undo", this.roomId, this.$store.state.auth.user.username);
   }
 
   setPath(path: paper.Path) {

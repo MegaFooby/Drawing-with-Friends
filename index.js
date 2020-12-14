@@ -65,7 +65,7 @@ io.on('connection', (socket) => {
         drawing.save();
     });
 
-    socket.on("undo", (id, name, line) => {
+    socket.on("undo", (id, name) => {
         Drawing.find({ user: name, roomid: id },
             (err, result) => {
                 Drawing.findOneAndDelete({ _id: result[result.length-1]._id }, function (err) {
@@ -91,6 +91,34 @@ io.on('connection', (socket) => {
         socket.broadcast.to(data.roomid).emit('chat-msg', data.message);
         const message = new ChatMessage(data);
         message.save();
+    });
+
+    socket.on('hideUser', (room, user) => {
+        Drawing.find(
+            { roomid: room },
+            function (err, doc) {
+                let hidden = JSON.parse(doc);
+                if(typeof hidden.find(user) === "undefined") {
+                    hidden.push(user);
+                    Drawing.updateOne({_id: doc._id}, {$set: {hidden: JSON.stringify(hidden)}});
+                }
+            }
+        );
+        io.broadcast.to(data.roomid).emit('hideUser', user);
+    });
+
+    socket.on('showUser', (room, user) => {
+        Drawing.find(
+            { roomid: room },
+            function (err, doc) {
+                let hidden = JSON.parse(doc);
+                if(typeof hidden.find(user) !== "undefined") {
+                    hidden.splice(hidden.find(user),1);
+                    Drawing.updateOne({_id: doc._id}, {$set: {hidden: JSON.stringify(hidden)}});
+                }
+            }
+        );
+        io.broadcast.to(data.roomid).emit('showUser', user);
     });
 });
 

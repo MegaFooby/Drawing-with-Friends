@@ -371,6 +371,8 @@ input, button {
   justify-content: space-between;
 
   input {
+    @media (max-width: 415px) { max-width: 85%; }
+
     height: 2rem;
     flex-grow: 0.95;
     border: $border-style;

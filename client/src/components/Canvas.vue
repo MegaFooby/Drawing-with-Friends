@@ -41,7 +41,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import ColorPicker from "vue-accessible-color-picker";
+import { ColorPicker } from "vue-accessible-color-picker";
 import paper from "paper";
 
 import SocketService from "../services/socket-io.service";

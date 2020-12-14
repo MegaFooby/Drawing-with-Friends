@@ -1,7 +1,3 @@
 
 declare module 'v-drag';
-declare module 'vue-accessible-color-picker' {
-  ColorPicker: {
-    colors
-  }
-};
+declare module 'vue-accessible-color-picker';

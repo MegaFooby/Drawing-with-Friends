@@ -49,8 +49,10 @@ async function join({id, username}) {
     const room = await Room.findById(id);
     if (!room.users.includes(username)){
         room.users.push(username);
+        await room.save();
+        return true;
     }
-    await room.save();
+    return false;
 }
 
 async function update(id, RoomParam) {

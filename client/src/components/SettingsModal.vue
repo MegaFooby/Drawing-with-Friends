@@ -91,20 +91,11 @@ export default class Modal extends Vue {
           aria-describedby="modalDescription"
         >
           <header class="modal-header" id="modalTitle">
-            <slot name="header"><b>Settings</b></slot>
+            <slot name="header"><b>Users</b></slot>
             <menu-item title="Cancel" @click="close()" icon="times"/>
           </header>
           <section class="modal-body" id="modalDescription">
             <slot name="body">
-              <!--
-              <label for="newColor">Change Colour (Hex):</label><br />
-              <input
-                type="text"
-                id="newColor"
-                name="newColor"
-                value=""
-              /><br /><br />-->
-              <label v-if="currentRoom">Users in Room:</label>
               <ul v-if="currentRoom" class="user-list">
                 <li v-for="user in userList" :key="user.username">
                   <span>
@@ -128,9 +119,8 @@ export default class Modal extends Vue {
 <style scoped  lang="scss">
 
 .user-list {
-  margin-top: 1rem;
   padding: 0;
-  max-height: 150px;
+  max-height: 45vh;
   overflow: scroll;
 
   li {

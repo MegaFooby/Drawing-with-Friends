@@ -33,6 +33,7 @@ import {
   faEye,
   faEyeSlash,
   faEraser,
+  faUsers,
 } from '@fortawesome/free-solid-svg-icons';
 
 export default function () {
@@ -64,5 +65,6 @@ export default function () {
     faEye,
     faEyeSlash,
     faEraser,
+    faUsers,
   );
 }

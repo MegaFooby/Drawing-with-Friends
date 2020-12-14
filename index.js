@@ -52,7 +52,7 @@ io.on('connection', (socket) => {
     socket.emit('connected', {message:"hi"});
 
     const updateUsersInRoom = (roomId) => {
-        roomService.users(roomId).then(usrs => socket.broadcast.to(roomId).emit('userList', usrs));
+        roomService.users(roomId).then(usrs => socket.to(roomId).emit('userList', usrs));
     };
 
     socket.on('disconnect', () => {
@@ -86,6 +86,7 @@ io.on('connection', (socket) => {
         socket.broadcast.to(data.roomid).emit('draw', data);
         const drawing = new Drawing(data);
         drawing.save();
+        if (roomService.join({ id: data.roomid, username: data.user })) updateUsersInRoom(data.roomid);
     });
 
     socket.on("hideUser", (id, name) => {

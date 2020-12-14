@@ -3,11 +3,13 @@ export default class User {
     lastName: string
     username: string;
     password: string;
-    constructor(firstname: string, lastname: string, username: string, password: string) {
+    admin: boolean;
+    constructor(firstname: string, lastname: string, username: string, password: string, admin: boolean) {
       this.firstName = firstname;
       this.lastName = lastname;
       this.username = username;
       this.password = password;
+      this.admin = admin;
     }
 
     name() {

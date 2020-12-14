@@ -21,7 +21,7 @@
               <v-icon :color="room.isPrivate ? '' : 'white'"
                 >mdi-lock</v-icon
               >
-              <v-icon v-if="isCreator(room)" @click.stop="promptDelete(room)">
+              <v-icon v-if="isCreator(room) || isAdmin" @click.stop="promptDelete(room)">
                 mdi-delete
               </v-icon>
             </v-card-title>
@@ -146,6 +146,10 @@ export default class RoomMenu extends Vue {
 
   isCreator(room: Room) {
     return room.creatorUsername === this.getUser().username;
+  }
+
+  get isAdmin() {
+    return this.getUser().admin;
   }
 
   promptDelete(room: Room) {

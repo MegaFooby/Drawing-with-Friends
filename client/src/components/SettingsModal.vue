@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Component, Vue } from "vue-property-decorator";
+  import { Component, Vue, Prop } from "vue-property-decorator";
+import { Room } from "../models/room";
   import MenuItem from "./menu/MenuItem.vue";
   //import User from "../models/user";
 
@@ -25,6 +26,7 @@ class User {
   components: { MenuItem },
 })
 export default class Modal extends Vue {
+  @Prop() currentRoom!: Room;
   newUN = "";
   newPW =  "";
   inRoom = true;
@@ -111,9 +113,9 @@ export default class Modal extends Vue {
                 name="newColor"
                 value=""
               /><br /><br />-->
-              <br v-if="inRoom" />
-              <label v-if="inRoom">Users in Room:</label>
-              <ul v-if="inRoom" class="user-list">
+              <br v-if="currentRoom" />
+              <label v-if="currentRoom">Users in Room:</label>
+              <ul v-if="currentRoom" class="user-list">
                 <li v-for="user in userList" :key="user.id">
                   <span>
                     <font-awesome-icon :title="user.online ? 'Online' : 'Offline'" :class="{online: user.online, offline: !user.online}" icon="circle"></font-awesome-icon>
@@ -121,7 +123,7 @@ export default class Modal extends Vue {
                   </span>
                   <span v-if="userIsAdmin()" class="actions">
                     <menu-item v-if="!user.isHidden" title="Hide User's Layer" @click="user.hide()" icon="eye"/>
-                    <menu-item v-if="user.isHidden" title="Hide User's Layer" @click="user.show()" icon="eye-slash"/>
+                    <menu-item v-if="user.isHidden" title="Show User's Layer" @click="user.show()" icon="eye-slash"/>
                     <menu-item v-if="roomIsPrivate()" title="Remove User From Room" @click="removeUser(user)" icon="times"/>
                   </span>
                 </li>

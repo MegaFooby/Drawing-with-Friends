@@ -25,9 +25,8 @@
       <font-awesome-icon title="Settings" v-on:click="showModal()" icon="cog"></font-awesome-icon> <!-- tried to use "cogs", not sure why it isn't found -->
       <font-awesome-icon title="Browse Rooms" v-on:click="goToRooms()" icon="th-large"></font-awesome-icon>
       <font-awesome-icon title="Show Chat" v-on:click="open = !open" icon="comments"></font-awesome-icon>
-           
     </div>
-      <modal v-show="isModalVisible" @close="closeModal" />
+      <modal v-show="isModalVisible" @close="closeModal" :currentRoom="$route.params.roomId"/>
   </div>
 </template>
 <script lang="ts">
@@ -37,14 +36,13 @@
   import Emoji from "./helpers/emoji";
   import { getTime } from '../plugins/time';
   import modal from "../components/SettingsModal.vue";
-  
-
+  import roomService from "../services/room.service";
 
   /** A component to make menus have consistant styling and be movable */
   @Component({
-  components: {
-    modal
-  }
+    components: {
+      modal
+    }
   })
   export default class Chat extends Vue {
     [x: string]: any;
@@ -56,6 +54,7 @@
     private currentlyScrolling = false;
     private newMessages = false;
     private isModalVisible = false;
+
     created() {
       SocketService.socket.on('chat-msg', (msg) => this.recieve(msg) );
 
@@ -75,7 +74,7 @@
       const msg = msgInput.value;
       if (msg === '') return;
 
-      const m = SocketService.sendMsg(msg, this.$route.query.id);
+      const m = SocketService.sendMsg(msg, this.$route.params.roomId);
       msgInput.value = '';
 
       this.$emit('message', m);
@@ -183,27 +182,6 @@
   #handle {
     user-select: none;
   }
-
-$border-radius: 1rem;
-
-$accent: violet;
-$white: azure;
-$dark: #302d32;
-$warning: #b33c3c;
-
-$message-bg: darksalmon;
-$message-fg: white;
-$sent-bg: cornflowerblue;
-$sent-fg: white;
-
-$input-bar-bg: white;
-$input-bg: white;
-$chat-bg: white;
-
-$new-messages: black;
-$name-color: black;
-$time-color: black;
-
 
 input, button {
   border-radius: $border-radius;

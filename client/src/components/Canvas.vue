@@ -10,7 +10,7 @@
         <menu-item title="Pen Tool" @click="activate(pen, 'pen', $event)" icon="pen" />
         <menu-item title="Square Tool" @click="activate(square, 'square', $event)" icon="square" />
         <menu-item title="Circle Tool" @click="activate(circle, 'circle', $event)" icon="circle" />
-        <menu-item title="Erase Tool" @click="activate(eraser, 'eraser', $event)" icon="" />
+        <menu-item title="Erase Tool" @click="activate(eraser, 'eraser', $event)" icon="eraser" />
       </menu-item-group>
       <menu-item :title="`${fill ? 'Disable':'Enable'} Fill Mode`" :active="fill" @click="fill = !fill" icon="fill-drip" />
       <menu-item title="Move Your View" :active="active(move)" @click="activate(move, 'move', $event)" icon="arrows-alt" />

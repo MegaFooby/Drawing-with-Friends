@@ -1,35 +1,78 @@
-<script>
-  import Component from 'vue-class-component';
+<script lang="ts">
+  import { Component, Vue } from "vue-property-decorator";
   import MenuItem from "./menu/MenuItem.vue";
-//import User from "../models/user";
-export default {
-  name: "modal",
-  data() {
-    return {
-      newUN: "",
-      newPW: ""
-    };
-  },
-  components: {
-    MenuItem
-  },
-  methods: {
-    close() {
-      this.$emit("close");
-    },
-    processForm() {
-      console.log({ newUN: this.newUN, newPW: this.newPW });
-    },
+  //import User from "../models/user";
 
-    loggedIn() {
-      return this.$store.state.auth.status.loggedIn;
-    },
-
-    getUser() {
-      return this.$store.state.auth.user;
-    }
+class User {
+  id: string;
+  isHidden: boolean;
+  online: boolean;
+  constructor (public name: string) {
+    this.id = Math.random().toString();
+    this.isHidden = Math.random() > 0.5;
+    this.online = Math.random() > 0.5;
   }
-};
+  hide() {
+    this.isHidden = true;
+  }
+  show() {
+    this.isHidden = false;
+  }
+}
+@Component({
+  name: "modal",
+
+  components: { MenuItem },
+})
+export default class Modal extends Vue {
+  newUN = "";
+  newPW =  "";
+  inRoom = true;
+  isAdmin = true;
+  userList = [
+    new User('Keen Bean'),
+    new User('Sun Bun'),
+    new User('Lou Bear'),
+    new User('Keen Bean'),
+    new User('Sun Bun'),
+    new User('Lou Bear'),
+    new User('Keen Bean'),
+    new User('Sun Bun'),
+    new User('Lou Bear'),
+    new User('Keen Bean'),
+    new User('Sun Bun'),
+    new User('Lou Bear'),
+  ]
+
+  close() {
+    this.$emit("close");
+  }
+  processForm() {
+    console.log({ newUN: this.newUN, newPW: this.newPW });
+  }
+
+  roomIsPrivate() {
+    return true;
+  }
+  userIsAdmin() {
+    return this.isAdmin;
+  }
+  hideLayer() {
+    const x = 0;
+  }
+  showLayer() {
+    const x = 0;
+  }
+
+  loggedIn() {
+    return this.$store.state.auth.status.loggedIn;
+  }
+
+  getUser() {
+    return this.$store.state.auth.user;
+  }
+}
+
 </script>
 <template>
   <form @submit.prevent="">
@@ -59,7 +102,8 @@ export default {
                 class="input"
                 v-model="newPW"
                 name="newPW"
-              /><br /><!--
+              /><br />
+              <!--
               <label for="newColor">Change Colour (Hex):</label><br />
               <input
                 type="text"
@@ -67,6 +111,21 @@ export default {
                 name="newColor"
                 value=""
               /><br /><br />-->
+              <br v-if="inRoom" />
+              <label v-if="inRoom">Users in Room:</label>
+              <ul v-if="inRoom" class="user-list">
+                <li v-for="user in userList" :key="user.id">
+                  <span>
+                    <font-awesome-icon :title="user.online ? 'Online' : 'Offline'" :class="{online: user.online, offline: !user.online}" icon="circle"></font-awesome-icon>
+                    {{user.name}}
+                  </span>
+                  <span v-if="userIsAdmin()" class="actions">
+                    <menu-item v-if="!user.isHidden" title="Hide User's Layer" @click="user.hide()" icon="eye"/>
+                    <menu-item v-if="user.isHidden" title="Hide User's Layer" @click="user.show()" icon="eye-slash"/>
+                    <menu-item v-if="roomIsPrivate()" title="Remove User From Room" @click="removeUser(user)" icon="times"/>
+                  </span>
+                </li>
+              </ul>
             </slot>
           </section>
           <footer class="modal-footer">
@@ -81,6 +140,33 @@ export default {
   </form>
 </template>
 <style scoped  lang="scss">
+
+.user-list {
+  margin-top: 1rem;
+  padding: 0;
+  max-height: 150px;
+  overflow: scroll;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    &:not(:last-of-type) {
+      border-bottom: 1px solid #cacaca;
+    }
+    .online {
+      color: lightgreen;
+    }
+    .offline {
+      color: lightgrey;
+    }
+
+    .actions {
+      display: flex;
+    }
+  }
+}
+
 input[type="text"],
 textarea {
   background-color: rgb(255, 255, 255);

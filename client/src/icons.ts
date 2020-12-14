@@ -30,6 +30,9 @@ import {
   faCog,
   faCheck,
   faTimes,
+  faEye,
+  faEyeSlash,
+  faEraser,
 } from '@fortawesome/free-solid-svg-icons';
 
 export default function () {
@@ -58,5 +61,8 @@ export default function () {
     faCog,
     faCheck,
     faTimes,
+    faEye,
+    faEyeSlash,
+    faEraser,
   );
 }
